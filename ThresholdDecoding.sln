@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvSelfOrthCodeModelingTool", "ConvSelfOrthCodeModelingTool\ConvSelfOrthCodeModelingTool.vcxproj", "{492A9046-0D2A-43A8-90D3-A5747C014FD9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{492A9046-0D2A-43A8-90D3-A5747C014FD9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{492A9046-0D2A-43A8-90D3-A5747C014FD9}.Debug|Win32.Build.0 = Debug|Win32
+		{492A9046-0D2A-43A8-90D3-A5747C014FD9}.Release|Win32.ActiveCfg = Release|Win32
+		{492A9046-0D2A-43A8-90D3-A5747C014FD9}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
