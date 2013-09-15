@@ -24,7 +24,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\HemingModelingTool\HemingModelingTool\ByteUtil.h">
+    <ClInclude Include="ConvSelfOrthCoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratingPolynom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +38,10 @@
     <ClCompile Include="ConvSelfOrthCodeModelingTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\HemingModelingTool\HemingModelingTool\ByteUtil.cpp">
+    <ClCompile Include="ConvSelfOrthCoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratingPolynom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
