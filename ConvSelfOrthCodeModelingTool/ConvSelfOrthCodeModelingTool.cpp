@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	int stepCount = 1000; //Количество инетараций
 	string polynom;
 	float p0 = 0.01; //Вероятность искажения бита при передаче
-
+	int n0, k0;
 	/*char *testArgs[6];
 	testArgs[0] = "-v";
 	testArgs[1] = "10";
@@ -54,6 +54,16 @@ int main(int argc, char *argv[])
 		if (strcmp("-p0", currChar) == 0) {
 			if (i < argsCount - 1) {
 				p0 = stof(nextChar);
+			}
+		}
+		if (strcmp("-n0", currChar) == 0) {
+			if (i < argsCount - 1) {
+				n0 = stoi(nextChar);
+			}
+		}
+		if (strcmp("-k0", currChar) == 0) {
+			if (i < argsCount - 1) {
+				k0 = stoi(nextChar);
 			}
 		}
 	}
@@ -86,7 +96,7 @@ int main(int argc, char *argv[])
 
 	byte testData = 96;
 	
-	ConvSelfOrthCoder *coder = new ConvSelfOrthCoder(&polynomFactors, polynomPower);
+	ConvSelfOrthCoder *coder = new ConvSelfOrthCoder(&polynomFactors, polynomPower, n0, k0);
 	coder->Init();
 
 	
