@@ -1,0 +1,51 @@
+﻿Build started 10/7/2013 12:48:46 AM.
+     1>Project "C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\ConvSelfOrthCodeModelingTool\ConvSelfOrthCodeModelingTool.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\ConvSelfOrthCodeModelingTool.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+         All outputs are up-to-date.
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Debug\ConvSelfOrthCodeModelingTool.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\xunter\Documents\Education\ma_diser\practice\HemingModelingTool\HemingModelingTool kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\ConvSelfOrthCodeModelingTool.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Debug\ConvSelfOrthCodeModelingTool.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Debug\ConvSelfOrthCodeModelingTool.lib" /MACHINE:X86 Debug\ConvSelfOrthCodeModelingTool.exe.embed.manifest.res
+         Debug\ConvSelfOrthCodeModelingTool.obj
+         Debug\ConvSelfOrthCoder.obj
+         Debug\GeneratingPolynom.obj
+         Debug\stdafx.obj
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: virtual __thiscall BinaryMatrix::~BinaryMatrix(void)" (??1BinaryMatrix@@UAE@XZ) referenced in function _main
+     1>ConvSelfOrthCoder.obj : error LNK2001: unresolved external symbol "public: virtual __thiscall BinaryMatrix::~BinaryMatrix(void)" (??1BinaryMatrix@@UAE@XZ)
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: int __thiscall ModelingEngine::GetNoiseCount(void)" (?GetNoiseCount@ModelingEngine@@QAEHXZ) referenced in function _main
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: static void __cdecl BaseClass::Clean(class BaseClass *)" (?Clean@BaseClass@@SAXPAV1@@Z) referenced in function _main
+     1>ConvSelfOrthCoder.obj : error LNK2001: unresolved external symbol "public: static void __cdecl BaseClass::Clean(class BaseClass *)" (?Clean@BaseClass@@SAXPAV1@@Z)
+     1>GeneratingPolynom.obj : error LNK2001: unresolved external symbol "public: static void __cdecl BaseClass::Clean(class BaseClass *)" (?Clean@BaseClass@@SAXPAV1@@Z)
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: int __thiscall ModelingResultItem::GetBitDiffCount(void)" (?GetBitDiffCount@ModelingResultItem@@QAEHXZ) referenced in function _main
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: bool __thiscall ModelingResultItem::IsResultEqualsOriginal(void)" (?IsResultEqualsOriginal@ModelingResultItem@@QAE_NXZ) referenced in function _main
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: class ModelingResultItem * __thiscall ModelingEngine::Simulate(void)" (?Simulate@ModelingEngine@@QAEPAVModelingResultItem@@XZ) referenced in function _main
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: __thiscall ModelingEngine::ModelingEngine(class Coder *,class DataBlockGenerator *,float,int)" (??0ModelingEngine@@QAE@PAVCoder@@PAVDataBlockGenerator@@MH@Z) referenced in function _main
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: __thiscall RandomDataBlockGenerator::RandomDataBlockGenerator(int)" (??0RandomDataBlockGenerator@@QAE@H@Z) referenced in function _main
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall ModelingResultConsoleItemStorage::Store(class ModelingResultItem *)" (?Store@ModelingResultConsoleItemStorage@@UAEXPAVModelingResultItem@@@Z)
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall ModelingResultConsoleItemStorage::Complete(void)" (?Complete@ModelingResultConsoleItemStorage@@UAEXXZ)
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: __thiscall BaseClass::BaseClass(void)" (??0BaseClass@@QAE@XZ) referenced in function "public: __thiscall ModelingResultItemStorage::ModelingResultItemStorage(void)" (??0ModelingResultItemStorage@@QAE@XZ)
+     1>ConvSelfOrthCoder.obj : error LNK2001: unresolved external symbol "public: __thiscall BaseClass::BaseClass(void)" (??0BaseClass@@QAE@XZ)
+     1>GeneratingPolynom.obj : error LNK2001: unresolved external symbol "public: __thiscall BaseClass::BaseClass(void)" (??0BaseClass@@QAE@XZ)
+     1>ConvSelfOrthCodeModelingTool.obj : error LNK2019: unresolved external symbol "public: virtual __thiscall BaseClass::~BaseClass(void)" (??1BaseClass@@UAE@XZ) referenced in function "public: virtual void * __thiscall BaseClass::`scalar deleting destructor'(unsigned int)" (??_GBaseClass@@UAEPAXI@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2001: unresolved external symbol "public: virtual __thiscall BaseClass::~BaseClass(void)" (??1BaseClass@@UAE@XZ)
+     1>GeneratingPolynom.obj : error LNK2001: unresolved external symbol "public: virtual __thiscall BaseClass::~BaseClass(void)" (??1BaseClass@@UAE@XZ)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: static unsigned char * __cdecl ByteUtil::StoreBoolArrayAsBytes(bool *,int,int &)" (?StoreBoolArrayAsBytes@ByteUtil@@SAPAEPA_NHAAH@Z) referenced in function "public: virtual unsigned char * __thiscall ConvSelfOrthCoder::Encode(unsigned char *)" (?Encode@ConvSelfOrthCoder@@UAEPAEPAE@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: static bool __cdecl ByteUtil::IsBitSettedInByte(unsigned char &,int)" (?IsBitSettedInByte@ByteUtil@@SA_NAAEH@Z) referenced in function "public: virtual unsigned char * __thiscall ConvSelfOrthCoder::Encode(unsigned char *)" (?Encode@ConvSelfOrthCoder@@UAEPAEPAE@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: bool __thiscall BinaryMatrix::GetItem(int,int)" (?GetItem@BinaryMatrix@@QAE_NHH@Z) referenced in function "private: bool __thiscall ConvSelfOrthCoder::ComputeCurrentCheckingBit(void)" (?ComputeCurrentCheckingBit@ConvSelfOrthCoder@@AAE_NXZ)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: int __thiscall BinaryMatrix::GetColCount(void)" (?GetColCount@BinaryMatrix@@QAEHXZ) referenced in function "public: virtual unsigned char * __thiscall ConvSelfOrthCoder::Decode(unsigned char *)" (?Decode@ConvSelfOrthCoder@@UAEPAEPAE@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: void __thiscall BinaryMatrix::SetItem(int,int,bool)" (?SetItem@BinaryMatrix@@QAEXHH_N@Z) referenced in function "public: virtual unsigned char * __thiscall ConvSelfOrthCoder::Decode(unsigned char *)" (?Decode@ConvSelfOrthCoder@@UAEPAEPAE@Z)
+     1>GeneratingPolynom.obj : error LNK2001: unresolved external symbol "public: void __thiscall BinaryMatrix::SetItem(int,int,bool)" (?SetItem@BinaryMatrix@@QAEXHH_N@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: static class BinaryMatrix * __cdecl BinaryMatrix::CreateVectorFromBinaryData(unsigned char *,int)" (?CreateVectorFromBinaryData@BinaryMatrix@@SAPAV1@PAEH@Z) referenced in function "public: virtual unsigned char * __thiscall ConvSelfOrthCoder::Decode(unsigned char *)" (?Decode@ConvSelfOrthCoder@@UAEPAEPAE@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: __thiscall BinaryMatrix::BinaryMatrix(int,int)" (??0BinaryMatrix@@QAE@HH@Z) referenced in function "public: void __thiscall ConvSelfOrthCoder::Init(void)" (?Init@ConvSelfOrthCoder@@QAEXXZ)
+     1>GeneratingPolynom.obj : error LNK2001: unresolved external symbol "public: __thiscall BinaryMatrix::BinaryMatrix(int,int)" (??0BinaryMatrix@@QAE@HH@Z)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: class BinaryMatrix * __thiscall BinaryMatrix::ConcatWidth(class BinaryMatrix *)" (?ConcatWidth@BinaryMatrix@@QAEPAV1@PAV1@@Z) referenced in function "protected: void __thiscall ConvSelfOrthCoder::InitH(void)" (?InitH@ConvSelfOrthCoder@@IAEXXZ)
+     1>ConvSelfOrthCoder.obj : error LNK2019: unresolved external symbol "public: static class BinaryMatrix * __cdecl BinaryMatrix::CreateIdentityMatrix(int)" (?CreateIdentityMatrix@BinaryMatrix@@SAPAV1@H@Z) referenced in function "protected: void __thiscall ConvSelfOrthCoder::InitHIdentity(void)" (?InitHIdentity@ConvSelfOrthCoder@@IAEXXZ)
+     1>C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Debug\ConvSelfOrthCodeModelingTool.exe : fatal error LNK1120: 21 unresolved externals
+     1>Done Building Project "C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\ConvSelfOrthCodeModelingTool\ConvSelfOrthCodeModelingTool.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.17

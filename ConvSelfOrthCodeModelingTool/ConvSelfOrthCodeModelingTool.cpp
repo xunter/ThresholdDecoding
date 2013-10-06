@@ -2,8 +2,9 @@
 //
 #include "stdafx.h"
 
+#include <iostream>
+#include <fstream>
 #include "Coder.h"
-#include "ConvSelfOrthCoder.h"
 
 #include "DataBlockGenerator.h"
 #include "RandomDataBlockGenerator.h"
@@ -13,8 +14,9 @@
 #include "ModelingEngine.h"
 #include "ModelingResultItemStorage.h"
 #include "ModelingResultConsoleItemStorage.h"
-#include "GeneratingPolynom.h"
 #include "BinaryMatrix.h"
+#include "ConvSelfOrthCoder.h"
+#include "GeneratingPolynom.h"
 
 void ConsoleUserPrompt() {
 	cout << "Press any key to continue..." << endl;
@@ -23,10 +25,12 @@ void ConsoleUserPrompt() {
 
 int main(int argc, char *argv[])
 {	
-	int stepCount = 1000; //Количество инетараций
+	int v = 1000; //Количество инетараций
 	string polynom;
+	bool loadPolynomFromFile = false;
 	float p0 = 0.01; //Вероятность искажения бита при передаче
 	int n0, k0;
+	float R;
 	/*char *testArgs[6];
 	testArgs[0] = "-v";
 	testArgs[1] = "10";
@@ -36,14 +40,18 @@ int main(int argc, char *argv[])
 	testArgs[5] = "0.01";*/
 
 	int argsCount = argc;
-		
+#if DEBUG
+	v = 1000;
+	polynom = "1+x+x^4+x^6";
+	p0 = 0.0001;
+#else
 	for (int i = 0; i < argsCount - 1; i++) {
 		char *currChar = argv[i];
 		char *nextChar = argv[i + 1];
 
 		if (strcmp("-v", currChar) == 0) {
 			if (i < argsCount - 1) {
-				stepCount = stoi(nextChar);
+				v = stoi(nextChar);
 			}
 		}
 		if (strcmp("--Polynom", currChar) == 0) {
@@ -51,24 +59,29 @@ int main(int argc, char *argv[])
 				polynom = nextChar;
 			}
 		}
+		if (strcmp("--PolynomFilename", currChar) == 0) {
+			if (i < argsCount - 1) {
+				polynom = nextChar;
+				loadPolynomFromFile = true;
+			}
+		}
 		if (strcmp("-p0", currChar) == 0) {
 			if (i < argsCount - 1) {
 				p0 = stof(nextChar);
 			}
 		}
-		if (strcmp("-n0", currChar) == 0) {
-			if (i < argsCount - 1) {
-				n0 = stoi(nextChar);
-			}
-		}
-		if (strcmp("-k0", currChar) == 0) {
-			if (i < argsCount - 1) {
-				k0 = stoi(nextChar);
-			}
-		}
 	}
 
-	if (stepCount <= 0) {
+#endif
+	
+	n0 = 2;
+	k0 = 1;
+	R = k0 / n0;
+	cout << "n0 = " << n0 << endl;
+	cout << "k0 = " << k0 << endl;
+	cout << "R = " << R << endl;
+
+	if (v <= 0) {
 		cout << "V must be greater than 0!";
 		exit(1);
 	}
@@ -81,34 +94,43 @@ int main(int argc, char *argv[])
 	//Init random
 	srand((unsigned)time(0));
 
+
+
 	//vol
+	if (loadPolynomFromFile) {
+		cout << "A polynom will be read from the \"" << polynom << "\" file." << endl;
+		ifstream inputStream (polynom);
+		if (inputStream.is_open()) {
+			getline(inputStream, polynom);
+			inputStream.close();
+		} else {
+			cout << "Failed to read a polynom from the \"" << polynom << "\" file!" << endl;
+		}
+	}
 	GeneratingPolynom generatingPolynom(polynom);
 	generatingPolynom.Init();
 	BinaryMatrix polynomFactors = *generatingPolynom.GetPolynomFactors();
 	int polynomPower = generatingPolynom.GetPolynomPower();
 	int encodedBlockLen = polynomPower * 2;
-	int dataBlockLen = polynomPower;
+	int informationLengthBits = v;
 		
-	cout << "Count: " << stepCount << endl;
-	cout << "Data bits: " << dataBlockLen << endl;
-	cout << "Encoded block bits: " << encodedBlockLen << endl;
+	cout << "V (count) = " << v << endl;
 	cout << "Noise probability: " << p0 * 100 << " %" << endl;
 
-	byte testData = 96;
+	int dataBlockLen = 1;
+	DataBlockGenerator *generator = new RandomDataBlockGenerator(dataBlockLen);
 	
-	ConvSelfOrthCoder *coder = new ConvSelfOrthCoder(&polynomFactors, polynomPower, n0, k0);
+	ConvSelfOrthCoder *coder = new ConvSelfOrthCoder(&polynomFactors, polynomPower, n0, k0, true);
 	coder->Init();
 
-	
 	//Coder *coder = new FakeCoder(dataBlockLen, m);
-	DataBlockGenerator *generator = new RandomDataBlockGenerator(dataBlockLen);	
 	ModelingEngine *modelingEngine = new ModelingEngine(coder, generator, p0, dataBlockLen);
 	ModelingResultItemStorage *itemStorage = new ModelingResultConsoleItemStorage();
 
 	float pResult = 0;
 	int failsCounter = 0;
 	int bitErrorCounter = 0;
-	for (int i = 0; i < stepCount; i++) {
+	for (int i = 0; i < v; i++) {
 		ModelingResultItem *item = modelingEngine->Simulate();
 		itemStorage->Store(item);
 		if (!item->IsResultEqualsOriginal()) failsCounter++;
@@ -118,9 +140,9 @@ int main(int argc, char *argv[])
 	
 	itemStorage->Complete();
 
-	float pNoise = (float)modelingEngine->GetNoiseCount() / (float)stepCount;
-	float pBitResult = (float)bitErrorCounter / (float)(stepCount * dataBlockLen);
-	pResult = (float)failsCounter / (float)stepCount;
+	float pNoise = (float)modelingEngine->GetNoiseCount() / (float)v;
+	float pBitResult = (float)bitErrorCounter / (float)(v * dataBlockLen);
+	pResult = (float)failsCounter / (float)v;
 		
 	cout << "Result noise probability: " << pNoise * 100 << " %" << endl;
 	cout << "Result bit probability: " << pBitResult * 100 << " %" << endl;
