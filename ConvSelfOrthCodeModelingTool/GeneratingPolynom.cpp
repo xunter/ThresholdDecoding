@@ -1,7 +1,10 @@
 #pragma once
 #include "StdAfx.h"
 #include "GeneratingPolynom.h"
+#include "StringUtils.h"
 
+
+namespace ThresholdDecoding {
 
 GeneratingPolynom::GeneratingPolynom(string &polynomStr)
 {
@@ -16,40 +19,33 @@ GeneratingPolynom::~GeneratingPolynom(void)
 
 void GeneratingPolynom::Init()
 {
-	vector<string> *parts = SplitString(*_polynomStr, '+');
+	int initialFactorsSize = 100;
+	vector<string> *parts = StringUtils::Split(*_polynomStr, '+');
 	int power = 0;
-	BinaryMatrix *factors = new BinaryMatrix(1, parts->size());
-	
+	BinaryMatrix *factors = BinaryMatrix::CreateVector(initialFactorsSize);
 	for (auto part = parts->begin(); part != parts->end(); ++part)
 	{
 		string partStr = *part;
 		int eachPower = 0;
 		if (partStr == "1") {
+			eachPower = 0;
 			// eachPower is already setted to 1;	
 		} else if (partStr == "x") {
 			eachPower = 1;
 		} else {
-			vector<string> *xAndPower = SplitString(partStr, '^');
+			vector<string> *xAndPower = StringUtils::Split(partStr, '^');
 			string powerStr = xAndPower->at(1);
 			eachPower = atoi(powerStr.c_str());		
+			delete xAndPower;
 		}
 		power = eachPower;
 		factors->SetItem(0, eachPower, true);
 	}
+	BinaryMatrix *initialFactors = factors;
+	factors = factors->Crop(0, 0, 0, power);
+	BaseClass::Clean(initialFactors);
 	_polynomFactors = factors;
 	_polynomPower = power;
-}
-
-vector<string> *GeneratingPolynom::SplitString(const string &str, char delimiter)
-{
-	vector<string> *strings = new vector<string>();
-    std::istringstream f(str);
-    std::string s;    
-    while (std::getline(f, s, delimiter)) {
-        std::cout << s << std::endl;
-        strings->push_back(s);
-    }
-	return strings;
 }
 
 BinaryMatrix *GeneratingPolynom::GetPolynomFactors()
@@ -60,4 +56,6 @@ BinaryMatrix *GeneratingPolynom::GetPolynomFactors()
 int GeneratingPolynom::GetPolynomPower()
 {
 	return _polynomPower;
+}
+
 }

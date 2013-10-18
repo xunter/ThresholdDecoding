@@ -1,0 +1,76 @@
+﻿Build started 10/18/2013 11:59:24 AM.
+     1>Project "C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\core_library.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Release\core_library.lastbuildstate".
+       InitializeBuildStatus:
+         Creating "Release\core_library.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt BaseClass.cpp BinaryData.cpp BinaryMatrix.cpp BitDataBlockGenerator.cpp ByteUtil.cpp Coder.cpp core_library.cpp DataBlockGenerator.cpp FakeCoder.cpp HemmingCoder.cpp ModelingEngine.cpp ModelingResultConsoleItemStorage.cpp ModelingResultItem.cpp ModelingResultItemStorage.cpp PMatrixColGenerator.cpp RandomDataBlockGenerator.cpp StringUtils.cpp VectorUtils.cpp
+         BaseClass.cpp
+         BinaryData.cpp
+         BinaryMatrix.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         BitDataBlockGenerator.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         ByteUtil.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+     1>ByteUtil.cpp(10): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+         Coder.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         core_library.cpp
+         DataBlockGenerator.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         FakeCoder.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         HemmingCoder.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         ModelingEngine.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+     1>ModelingEngine.cpp(110): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+         ModelingResultConsoleItemStorage.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         ModelingResultItem.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         ModelingResultItemStorage.cpp
+         PMatrixColGenerator.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+     1>PMatrixColGenerator.cpp(30): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+         RandomDataBlockGenerator.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         StringUtils.cpp
+         VectorUtils.cpp
+         Generating Code...
+       ResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Release\app.res" app.rc 
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\core_library.lib" /NOLOGO Release\app.res
+         Release\BaseClass.obj
+         Release\BinaryData.obj
+         Release\BinaryMatrix.obj
+         Release\BitDataBlockGenerator.obj
+         Release\ByteUtil.obj
+         Release\Coder.obj
+         Release\core_library.obj
+         Release\DataBlockGenerator.obj
+         Release\FakeCoder.obj
+         Release\HemmingCoder.obj
+         Release\ModelingEngine.obj
+         Release\ModelingResultConsoleItemStorage.obj
+         Release\ModelingResultItem.obj
+         Release\ModelingResultItemStorage.obj
+         Release\PMatrixColGenerator.obj
+         Release\RandomDataBlockGenerator.obj
+         Release\StringUtils.obj
+         Release\VectorUtils.obj
+     1>LINK : warning LNK4068: /MACHINE not specified; defaulting to X86
+     1>ModelingResultItemStorage.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+     1>core_library.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+         core_library.vcxproj -> C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\core_library.lib
+       FinalizeBuildStatus:
+         Deleting file "Release\core_library.unsuccessfulbuild".
+         Touching "Release\core_library.lastbuildstate".
+     1>Done Building Project "C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\core_library.vcxproj" (rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:10.03

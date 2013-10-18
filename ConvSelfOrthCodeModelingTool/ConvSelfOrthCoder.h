@@ -3,6 +3,9 @@
 
 #include "BinaryMatrix.h"
 
+
+namespace ThresholdDecoding {
+
 class ConvSelfOrthCoder :
 	public Coder
 {
@@ -37,5 +40,8 @@ private:
 	void SetFirstItem(bool &val);
 	bool ComputeCurrentCheckingBit();
 	bool CheckThresholdCondition(bool sumOfSyndromes);
+
+	int GetEncodedBitsCount();
 };
 
+}

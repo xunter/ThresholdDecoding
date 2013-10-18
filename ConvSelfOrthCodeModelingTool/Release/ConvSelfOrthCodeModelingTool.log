@@ -1,0 +1,60 @@
+﻿Build started 10/18/2013 11:59:34 AM.
+     1>Project "C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\ConvSelfOrthCodeModelingTool\ConvSelfOrthCodeModelingTool.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Release\ConvSelfOrthCodeModelingTool.lastbuildstate".
+       InitializeBuildStatus:
+         Creating "Release\ConvSelfOrthCodeModelingTool.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Release\ConvSelfOrthCodeModelingTool.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\ConvSelfOrthCodeModelingTool.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ConvSelfOrthCodeModelingTool.cpp ConvSelfOrthCoder.cpp GeneratingPolynom.cpp
+         ConvSelfOrthCodeModelingTool.cpp
+     1>C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\convselforthcodemodelingtool\GeneratingPolynom.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\convselforthcodemodelingtool\GeneratingPolynom.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\convselforthcodemodelingtool\GeneratingPolynom.h(4): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+     1>ConvSelfOrthCodeModelingTool.cpp(53): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>ConvSelfOrthCodeModelingTool.cpp(81): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>ConvSelfOrthCodeModelingTool.cpp(101): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h(105) : see declaration of 'strcpy'
+         ConvSelfOrthCoder.cpp
+     1>C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\ByteUtil.h(39): warning C4091: 'static ' : ignored on left of 'ThresholdDecoding::ByteUtil' when no variable is declared
+         GeneratingPolynom.cpp
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\convselforthcodemodelingtool\GeneratingPolynom.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\convselforthcodemodelingtool\GeneratingPolynom.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+     1>c:\users\xunter\documents\education\ma_diser\practice\thresholddecoding\convselforthcodemodelingtool\GeneratingPolynom.h(4): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\ConvSelfOrthCodeModelingTool.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\ConvSelfOrthCodeModelingTool\lib core_library.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\ConvSelfOrthCodeModelingTool.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\ConvSelfOrthCodeModelingTool.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\ConvSelfOrthCodeModelingTool.lib" /MACHINE:X86 Release\ConvSelfOrthCodeModelingTool.obj
+         Release\ConvSelfOrthCoder.obj
+         Release\GeneratingPolynom.obj
+         Release\stdafx.obj
+         lib\core_library.lib
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\BaseClass.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\BinaryData.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\BinaryMatrix.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\BitDataBlockGenerator.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\ByteUtil.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\Coder.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\core_library.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\DataBlockGenerator.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\FakeCoder.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\HemmingCoder.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\ModelingEngine.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\ModelingResultConsoleItemStorage.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\ModelingResultItem.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\ModelingResultItemStorage.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\PMatrixColGenerator.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\RandomDataBlockGenerator.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\StringUtils.obj
+         C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\core_library\Release\VectorUtils.obj
+         Generating code
+         Finished generating code
+         ConvSelfOrthCodeModelingTool.vcxproj -> C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\ConvSelfOrthCodeModelingTool.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\Release\ConvSelfOrthCodeModelingTool.exe;#1" /manifest Release\ConvSelfOrthCodeModelingTool.exe.intermediate.manifest
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppCommon.targets(574,5): error MSB6006: "mt.exe" exited with code 31.
+     1>Done Building Project "C:\Users\xunter\Documents\Education\ma_diser\practice\ThresholdDecoding\ConvSelfOrthCodeModelingTool\ConvSelfOrthCodeModelingTool.vcxproj" (rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:03.44
