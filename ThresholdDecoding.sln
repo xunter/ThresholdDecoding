@@ -5,6 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvSelfOrthCodeModelingToo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_library", "core_library\core_library.vcxproj", "{0E5DF58F-7BA4-449D-A172-54EA149F3F0A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThresholdDecodingTest", "ThresholdDecodingTest\ThresholdDecodingTest.vcxproj", "{68009DC5-CFE6-417F-8AA7-24790CD53C74}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0E5DF58F-7BA4-449D-A172-54EA149F3F0A} = {0E5DF58F-7BA4-449D-A172-54EA149F3F0A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +24,10 @@ Global
 		{0E5DF58F-7BA4-449D-A172-54EA149F3F0A}.Debug|Win32.Build.0 = Debug|Win32
 		{0E5DF58F-7BA4-449D-A172-54EA149F3F0A}.Release|Win32.ActiveCfg = Release|Win32
 		{0E5DF58F-7BA4-449D-A172-54EA149F3F0A}.Release|Win32.Build.0 = Release|Win32
+		{68009DC5-CFE6-417F-8AA7-24790CD53C74}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68009DC5-CFE6-417F-8AA7-24790CD53C74}.Debug|Win32.Build.0 = Debug|Win32
+		{68009DC5-CFE6-417F-8AA7-24790CD53C74}.Release|Win32.ActiveCfg = Release|Win32
+		{68009DC5-CFE6-417F-8AA7-24790CD53C74}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

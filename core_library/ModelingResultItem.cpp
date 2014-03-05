@@ -27,10 +27,11 @@ namespace ThresholdDecoding {
 	};
 
 	bool ModelingResultItem::IsResultEqualsOriginal() {
-		return ByteUtil::IsDataEqual(_srcBlock->GetData(), _decodedBlock->GetData(), _originalDataLen, _originalDataLen);
+		return ByteUtil::IsDataEqual(_srcBlock->GetData(), _decodedBlock->GetData(), _originalDataLen);
 	};
 
 	ModelingResultItem::ModelingResultItem(int originalDataLen) {
+		noiseExists = false;
 		_originalDataLen = originalDataLen;
 
 		_srcBlock = null;

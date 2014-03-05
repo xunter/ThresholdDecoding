@@ -7,7 +7,7 @@ namespace ThresholdDecoding {
 RandomDataBlockGenerator::RandomDataBlockGenerator(int dataBlockLen) : DataBlockGenerator(dataBlockLen) {};
 
 byte *RandomDataBlockGenerator::GenerateBlock() {
-	int len = _dataBlockLen;
+	int len = GetDataBlockLength();
 	int byteLen = ByteUtil::GetByteLenForDataLen(len);
 	byte *arr = new byte[byteLen];
 	int dataBitCounter = 0;

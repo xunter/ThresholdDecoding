@@ -81,6 +81,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CoderDefinitions.h" />
+    <ClInclude Include="ConvSelfOrthCoder.h" />
+    <ClInclude Include="DataBlockGenerator.h" />
+    <ClInclude Include="GeneratingPolynom.h" />
     <ClInclude Include="BaseClass.h" />
     <ClInclude Include="BinaryData.h" />
     <ClInclude Include="BinaryMatrix.h" />
@@ -90,6 +94,8 @@
     <ClInclude Include="core_library.h" />
     <ClInclude Include="FakeCoder.h" />
     <ClInclude Include="HemmingCoder.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="MiscUtils.h" />
     <ClInclude Include="ModelingEngine.h" />
     <ClInclude Include="ModelingResultConsoleItemStorage.h" />
     <ClInclude Include="ModelingResultItem.h" />
@@ -100,6 +106,9 @@
     <ClInclude Include="VectorUtils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CoderDefinitions.cpp" />
+    <ClCompile Include="ConvSelfOrthCoder.cpp" />
+    <ClCompile Include="GeneratingPolynom.cpp" />
     <ClCompile Include="BaseClass.cpp" />
     <ClCompile Include="BinaryData.cpp" />
     <ClCompile Include="BinaryMatrix.cpp" />
@@ -110,6 +119,8 @@
     <ClCompile Include="DataBlockGenerator.cpp" />
     <ClCompile Include="FakeCoder.cpp" />
     <ClCompile Include="HemmingCoder.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="MiscUtils.cpp" />
     <ClCompile Include="ModelingEngine.cpp" />
     <ClCompile Include="ModelingResultConsoleItemStorage.cpp" />
     <ClCompile Include="ModelingResultItem.cpp" />

@@ -1,1 +1,1 @@
--v 1000 -p0 0.0000001 --Polynom 1+x+x^4+x^6
+-m 1000 -snrdB 5 --Polynom 1+x+x^4+x^6 --PolynomFilename coder_definition.txt

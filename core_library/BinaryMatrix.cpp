@@ -320,4 +320,19 @@ void BinaryMatrix::DisplayConsole(char *name) {
 		cout << endl;
 	}
 };
+
+void BinaryMatrix::ShiftRight(int count) {
+	for (int i = 0; i < count; i++) {
+		ShiftRightOnce();
+	}
+};
+
+void BinaryMatrix::ShiftRightOnce() {
+	BinaryMatrix *registry = this;
+	for (int i = registry->GetColCount() - 1; i > 0; i--) {
+		bool prevVal = registry->GetItem(0, i - 1);
+		registry->SetItem(0, i, prevVal);
+	}
+	registry->SetItem(0, 0, false);	
+};
 }

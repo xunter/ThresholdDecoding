@@ -2,7 +2,6 @@
 
 #include "core_library.h"
 
-
 namespace ThresholdDecoding {
 
 static class ByteUtil {
@@ -19,10 +18,11 @@ public:
 
 	// Распечатывает содержимое массива байт с заданным размером на консоле в hex
 	static void ShowDataBlockOnConsole(byte *dataBlock, int dataBlockLen);
-	static bool IsDataEqual(byte *dataFirst, byte *dataSecond, int dataLen, int bitLength);
+	static bool IsDataEqual(byte *dataFirst, byte *dataSecond, int bitLength);
 	static byte *CopyData(byte *data, int len);
 	static byte GetOnlyBitByte(byte &b, int bitPos);
 	static byte InvertByte(byte b);
+	static void SetBitValue(byte &b, int posBit, bool bitValue);
 	static void SetBit(byte &b, int bitPos);
 	static void UnsetBit(byte &b, int bitPos);
 	static void InvertBit(byte &b, int bitPos);
@@ -36,5 +36,14 @@ public:
 	static byte *StoreBoolArrayAsBytes(bool *boolArr, int lengthBoolArr, int &lengthByteArr);
 
 	static byte ReverseBitsInByte(byte original);
+
+	static bool *ConvertBitsToBoolArray(byte *bits, int count);
+
+	static void SetBitForByteData(byte *byteData, int countBits, int indexBit, bool bitValue);
+	static bool GetBitForByteData(byte *byteData, int countBits, int indexBit);
+	static void InvertBitInByteData(byte *byteData, int countBits, int indexBit);
+	static void FindBitLocationInData(byte *data, int countBits, int indexBit, byte &foundByte, int &foundIndexByte, int &foundIndexBit);
+	static byte *CopyBitsData(byte *bitsData, int lenBits);
+	static bool Xor(bool left, bool right);
 };
 }

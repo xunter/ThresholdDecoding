@@ -17,18 +17,13 @@
   <ItemGroup>
     <None Include="ReadMe.txt" />
     <None Include="default_args.txt" />
+    <None Include="coder_definition.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConvSelfOrthCoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratingPolynom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -39,14 +34,5 @@
     <ClCompile Include="ConvSelfOrthCodeModelingTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConvSelfOrthCoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratingPolynom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\core_library.lib" />
   </ItemGroup>
 </Project>

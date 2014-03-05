@@ -19,6 +19,8 @@ public:
 	ModelingResultItem(int orignalDataLen);
 	virtual ~ModelingResultItem(void);
 	
+	bool noiseExists;
+
 	void ModelingResultItem::SetBitDiffCount(int count);
 	int ModelingResultItem::GetBitDiffCount();
 

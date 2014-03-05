@@ -12,6 +12,7 @@ public:
 	
 	virtual int GetEncodedBitsCount() = null;
 	virtual int GetEncodedBytesCount();
+	virtual void Init() = null;
 };
 }
 

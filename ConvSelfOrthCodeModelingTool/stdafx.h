@@ -15,6 +15,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <stack>
 #include <iomanip>
 #include <time.h>

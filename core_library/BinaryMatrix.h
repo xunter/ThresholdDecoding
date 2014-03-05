@@ -45,9 +45,11 @@ public:
 	bool IsVector();
 	bool IsZero();
 
+	void ShiftRight(int count);
+	void ShiftRightOnce();
+
 	void DisplayConsole(char *name);
-
-
+	
 	bool IsSubMatrixEquals(int rowStart, int rowEnd, int colStart, int colEnd, BinaryMatrix *other);
 	
 	static BinaryMatrix *CreateIdentityMatrix(int size);

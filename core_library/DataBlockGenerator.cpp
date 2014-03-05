@@ -4,7 +4,9 @@
 
 namespace ThresholdDecoding {
 
-DataBlockGenerator::DataBlockGenerator() {};
+DataBlockGenerator::DataBlockGenerator() {
+	_dataBlockLen = 1;
+};
 
 DataBlockGenerator::DataBlockGenerator(int dataBlockLen) {
 	_dataBlockLen = dataBlockLen;

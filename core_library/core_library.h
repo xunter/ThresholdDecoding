@@ -10,6 +10,10 @@
 #include <time.h>
 #include <ctime>
 
+#include <vector>
+#include <map>
+#include <stack>
+
 namespace ThresholdDecoding {
 
 	typedef unsigned char byte;
