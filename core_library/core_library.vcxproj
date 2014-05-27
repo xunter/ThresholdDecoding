@@ -100,6 +100,7 @@
     <ClInclude Include="ModelingResultConsoleItemStorage.h" />
     <ClInclude Include="ModelingResultItem.h" />
     <ClInclude Include="ModelingResultItemStorage.h" />
+    <ClInclude Include="MultiThresholdCoder.h" />
     <ClInclude Include="PMatrixColGenerator.h" />
     <ClInclude Include="RandomDataBlockGenerator.h" />
     <ClInclude Include="StringUtils.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="ModelingResultConsoleItemStorage.cpp" />
     <ClCompile Include="ModelingResultItem.cpp" />
     <ClCompile Include="ModelingResultItemStorage.cpp" />
+    <ClCompile Include="MultiThresholdCoder.cpp" />
     <ClCompile Include="PMatrixColGenerator.cpp" />
     <ClCompile Include="RandomDataBlockGenerator.cpp" />
     <ClCompile Include="StringUtils.cpp" />

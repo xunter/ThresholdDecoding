@@ -57,7 +57,11 @@ BinaryMatrix *BinaryMatrix::LoadFromByteArray(byte *data, int row, int col) {
 byte *BinaryMatrix::StoreAsByteArray() {
 	int dataLen = GetBitsLength();
 	int lengthOfByteArray;
-	byte *arr = ByteUtil::StoreBoolArrayAsBytes(_matrixMemory, _lengthOfMatrixItems, lengthOfByteArray);
+	int sizeBoolArr = _matrixMemory->size();
+	bool *boolArr = new bool[sizeBoolArr];
+	for (int i = 0; i < sizeBoolArr; i++) boolArr[i] = _matrixMemory->at(i);
+	byte *arr = ByteUtil::StoreBoolArrayAsBytes(boolArr, _lengthOfMatrixItems, lengthOfByteArray);
+	delete [] boolArr;
 	return arr;
 };
 
@@ -71,34 +75,26 @@ BinaryMatrix::BinaryMatrix(int rowSize, int colSize) {
 };
 
 BinaryMatrix::~BinaryMatrix() {
-	free(_matrixMemory);
-	/*
-	for (int i = 0; i < _row; i++) {
-		delete [] _matrixArr[i];
-	}
-	delete [] _matrixArr;
-	*/
+	delete _matrixMemory;
 };
 
 void BinaryMatrix::InitMatrixArray() {	
 	_lengthOfMatrixItems = _row * _col;
-	_matrixMemory = (bool *)malloc(sizeof(bool) * _row * _col);
-
-	for (int i = 0; i < _row; i++) {
-		for (int j = 0; j < _col; j++) {
-			SetItem(i, j, false);
-		}
-	}
+	_matrixMemory = new std::vector<bool>(_lengthOfMatrixItems, false);
 };
 
 void BinaryMatrix::SetItem(int row, int col, bool val) {
 	if (row < 0 || col < 0 || row > _row - 1 || col > _col - 1) throw new std::exception("Index is out of the range!");
-	_matrixMemory[row * _col + col] = val;
+	int index = row * _col + col;
+	std::vector<bool>::reference item = _matrixMemory->at(index);
+	item = val;
 };
 
 bool BinaryMatrix::GetItem(int row, int col) {
 	if (row < 0 || col < 0 || row > _row - 1 || col > _col - 1) throw new std::exception("Index is out of the range!");
-	return _matrixMemory[row * _col + col];
+	int index = row * _col + col;
+	bool val = _matrixMemory->at(index);
+	return val;
 };
 
 BinaryMatrix *BinaryMatrix::Transpose() {
@@ -334,5 +330,9 @@ void BinaryMatrix::ShiftRightOnce() {
 		registry->SetItem(0, i, prevVal);
 	}
 	registry->SetItem(0, 0, false);	
+};
+
+bool BinaryMatrix::GetLastZeroRowItem() {
+	return GetItem(0, GetColCount() - 1);
 };
 }

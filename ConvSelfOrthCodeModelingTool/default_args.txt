@@ -1,1 +1,1 @@
--m 1000 -snrdB 5 --Polynom 1+x+x^4+x^6 --PolynomFilename coder_definition.txt
+--decoderType basic -m 1000 -snrdB 4 --filenameCoderDefinition C:\Users\xunter\SkyDrive\Documents\Education\ma_diser\SOC_gen_tool\result_k1_n2_R1r2_N100_d5.txt --useRawResultData 1

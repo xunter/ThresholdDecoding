@@ -10,7 +10,6 @@ namespace ThresholdDecoding {
 		_deleteData = true;
 	}
 
-
 	BinaryData::BinaryData(byte *data, int length)
 	{
 		_binaryData = data;

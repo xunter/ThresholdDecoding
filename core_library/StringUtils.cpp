@@ -12,15 +12,21 @@ StringUtils::~StringUtils(void)
 {
 }
 
-std::vector<std::string> *StringUtils::Split(const std::string str, const char delimiter)
+std::vector<std::string> *StringUtils::Split(const std::string &str, char delimiter)
 {
 	std::vector<std::string> *strings = new std::vector<std::string>();
-    std::istringstream f(str);
-    std::string s;    
-    while (std::getline(f, s, delimiter)) {
-        strings->push_back(s);
-    }
+	Split(str, delimiter, *strings);
 	return strings;
+}
+
+void StringUtils::Split(const std::string &str, char delimiter, std::vector<std::string> &vecParts)
+{
+    std::istringstream f(str);
+	std::string strBuf;
+    while (std::getline(f, strBuf, delimiter)) {
+		const std::string s = strBuf;
+		vecParts.push_back(strBuf);
+    }	
 }
 
 }

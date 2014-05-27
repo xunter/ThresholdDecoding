@@ -259,18 +259,34 @@ byte ByteUtil::ReverseBitsInByte(byte b) {
 bool *ByteUtil::ConvertBitsToBoolArray(byte *bits, int count) {
 	int bytesCount = GetByteLenForDataLen(count);
 	bool *boolArr = new bool[count];
+	ConvertBitsToBoolArray(bits, count, boolArr);
+	return boolArr;
+};
+
+void ByteUtil::ConvertBitsToBoolArray(byte *bits, int count, bool *existingBoolArr) {
+	int bytesCount = GetByteLenForDataLen(count);
 	for (int i = 0; i < bytesCount; i++) {
 		byte curr = bits[i];
 		for (int j = 0; j < BYTE_BIT_LEN; j++) {
 			int boolIndex = i * BYTE_BIT_LEN + j;
 			bool currBit = IsBitSettedInByte(curr, j);
-			boolArr[boolIndex] = currBit;
+			existingBoolArr[boolIndex] = currBit;
+
+			if (boolIndex == count - 1)
+				break;
 		}
 	}
-	return boolArr;
 };
 
 bool ByteUtil::Xor(bool left, bool right) {
 	return left != right;
+};
+
+bool *ByteUtil::CopyBoolArray(bool *arr, int len) {
+	bool *copied = new bool[len];
+	for (int i = 0; i < len; i++) {
+		copied[i] = arr[i];
+	}
+	return copied;
 };
 }

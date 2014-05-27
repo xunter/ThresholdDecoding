@@ -6,6 +6,15 @@
 *.user
 *.sln.docstates
 
+ConvSelfOrthCodeModelingTool/Debug/
+ConvSelfOrthCodeModelingTool/Release/
+
+core_library/Debug/
+core_library/Release/
+
+ThresholdDecodingTest/Debug/
+ThresholdDecodingTest/Release/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

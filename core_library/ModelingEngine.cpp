@@ -9,18 +9,25 @@ namespace ThresholdDecoding {
 
 
 ModelingEngine::ModelingEngine(Coder *coder, DataBlockGenerator *generator, float pNoise, int originalDataBitsLen) {
+	_storeItems = false;
 	_dataBlockLen = originalDataBitsLen;
 	_pNoise = pNoise;
 	_noiseCounter = 0;
 	_coder = coder;
 	_generator = generator;
 	_items = new std::vector<ModelingResultItem *>();
+	_workingItemsQueue = new std::queue<ModelingResultItem *>();
 	_decoderTactsLatency = 0;
 	_counter = 0;
 }
 
 ModelingEngine::~ModelingEngine(void) {
 	delete _items;
+	delete _workingItemsQueue;
+};
+
+void ModelingEngine::SetStoreItems(bool store) {
+	_storeItems = store;
 };
 
 void ModelingEngine::SetChannel(DataTransmissionChannel *channel) {
@@ -33,8 +40,6 @@ DataTransmissionChannel *ModelingEngine::GetChannel() {
 
 TotalSimulationResult *ModelingEngine::SimulateTotal(int volume, int limitErrors) {
 	TotalSimulationResult *totalResult = new TotalSimulationResult();
-	std::vector<ModelingResultItem *> *modelingResultItems = new std::vector<ModelingResultItem *>();
-	totalResult->Items = modelingResultItems;
 
 	float pResult = 0;
 	int bitFailsCounter = 0;
@@ -45,11 +50,17 @@ TotalSimulationResult *ModelingEngine::SimulateTotal(int volume, int limitErrors
 	int loopCounter = 0;
 	int v = 0;
 	int m = _decoderTactsLatency;
+	double donePercentage = 0.00;
 	while (mCounter < mMax) {
+		double currDonePercentage = 100.00 * ((double)mCounter / mMax);
+		if (currDonePercentage - donePercentage >= 1) {
+			donePercentage = currDonePercentage;
+			std::cout << "Done: " << std::fixed << std::setprecision(1) << donePercentage << " %" << std::endl;
+		}
 		ModelingResultItem *item = SimulateIteration();
-		if (loopCounter >= m) {
+		if (item != null && loopCounter >= m) {
 			if (!item->IsResultEqualsOriginal()) { 
-				int diffCount = ByteUtil::ComputeBitDiff(item->GetSourceBlock()->GetData(), item->GetDecodedBlock()->GetData(), _dataBlockLen);
+				int diffCount = item->GetBitDiffCount();
 				bitFailsCounter += diffCount;
 				mCounter++;
 				failsCounter++;
@@ -57,6 +68,7 @@ TotalSimulationResult *ModelingEngine::SimulateTotal(int volume, int limitErrors
 			bitErrorCounter += item->GetBitDiffCount();
 			v++;
 		}
+		if (!_storeItems && item != null) delete item;
 		loopCounter++;
 	}
 		
@@ -76,13 +88,23 @@ TotalSimulationResult *ModelingEngine::SimulateTotal(int volume, int limitErrors
 	*/
 	float pBlock = 1 - pow((1 - pBitResult), _dataBlockLen);
 
+	totalResult->totalCountIterations = loopCounter;
+
 	totalResult->pNoise = pNoise;
 	totalResult->pBitResult = pBitResult;
 	totalResult->pResult = pResult;
 
 	totalResult->pBlock = pBlock;
+	
+	totalResult->Items->resize(_items->size(), null);
+	for (int i = 0; i < _items->size(); i++) totalResult->Items->push_back(_items->at(i));
 
 	return totalResult;
+};
+
+void ShowDataConsole(byte *data, int lengthBits, char *labelText) {	
+	std::cout << labelText << ": ";
+	ByteUtil::ShowDataBlockOnConsole(data, lengthBits);
 };
 
 ModelingResultItem *ModelingEngine::SimulateIteration() {	
@@ -92,7 +114,9 @@ ModelingResultItem *ModelingEngine::SimulateIteration() {
 	int bytesLen = ByteUtil::GetByteLenForDataLen(dataBitsCount);
 
 	ModelingResultItem *item = new ModelingResultItem(dataBitsCount);
-	_items->push_back(item);
+	_workingItemsQueue->push(item);
+	if (_storeItems) _items->push_back(item);
+	
 	byte *originalData = _generator->GenerateBlock();
 	item->SetSourceBlock(new BinaryData(originalData, bytesLen, dataBitsCount));
 	
@@ -109,29 +133,32 @@ ModelingResultItem *ModelingEngine::SimulateIteration() {
 		item->noiseExists = true;
 		_noiseCounter++;
 	}
-
-
+	
 	byte *decodedData = _coder->Decode(noisedData);
 	item->SetDecodedBlock(new BinaryData(decodedData, bytesLen, dataBitsCount));
 
+	item = null;
 	if (_counter >= _decoderTactsLatency) {
-		ModelingResultItem *waitingItem = _items->at(_counter - _decoderTactsLatency);
+		ModelingResultItem *waitingItem = _workingItemsQueue->front();
+		_workingItemsQueue->pop();
+		//waitingItem = _items->at(_counter - _decoderTactsLatency);
+		//ModelingResultItem *waitingItem = _items->at(_counter - _decoderTactsLatency);
 		waitingItem->SetDecodedBlock(new BinaryData(decodedData, bytesLen, dataBitsCount));
 		
 		bool noiseExists = waitingItem->noiseExists;
 		if (noiseExists) {
-			std::cout << "Noise exists" << std::endl;
+			//std::cout << "Noise exists" << std::endl;
 		}
-	std::cout << "Original data: ";
-	ByteUtil::ShowDataBlockOnConsole(waitingItem->GetSourceBlock()->GetData(), dataBitsCount);
-	std::cout << "Encoded data: ";
-	ByteUtil::ShowDataBlockOnConsole(waitingItem->GetEncodedBlock()->GetData(), countEncodedBits);
-	std::cout << "Received data: ";
-	ByteUtil::ShowDataBlockOnConsole(waitingItem->GetReceivedBlock()->GetData(), countEncodedBits);
-	std::cout << "Decoded data: ";
-	ByteUtil::ShowDataBlockOnConsole(decodedData, dataBitsCount);
 
 		int bitDiffCount = ByteUtil::ComputeBitDiff(waitingItem->GetSourceBlock()->GetData(), decodedData, dataBitsCount);
+
+		if (bitDiffCount > 0) {		
+			ShowDataConsole(waitingItem->GetSourceBlock()->GetData(), dataBitsCount, "Original data");
+			ShowDataConsole(waitingItem->GetEncodedBlock()->GetData(), countEncodedBits, "Encoded data");
+			ShowDataConsole(waitingItem->GetReceivedBlock()->GetData(), countEncodedBits, "Received data");
+			ShowDataConsole(decodedData, dataBitsCount, "Decoded data");
+		}
+
 		waitingItem->SetBitDiffCount(bitDiffCount);
 		item = waitingItem;
 	}

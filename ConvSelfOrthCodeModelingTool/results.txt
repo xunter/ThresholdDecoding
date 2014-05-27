@@ -1,0 +1,9 @@
+Time_start = Tue May 27 11:35:14 2014
+
+Time_end = Tue May 27 11:35:53 2014
+
+Total_iterations = 46157
+SNRdB = 4.000000e+000
+P0 = 5.649530e-002 %
+Pb = 2.167035e-002 %
+PB = 2.167034e-002 %

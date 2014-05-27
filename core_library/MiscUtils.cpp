@@ -1,8 +1,13 @@
 #include "MiscUtils.h"
+#include "stdafx.h"
+
+#include <iostream>
+#include <fstream>
 
 #define _USE_MATH_DEFINES
 
 #include <math.h>
+#include <string.h>
 
 
 MiscUtils::MiscUtils(void)
@@ -14,10 +19,40 @@ MiscUtils::~MiscUtils(void)
 {
 }
 
+double LoadCachedSNRdB(double snrdB, double r) {
+	double p0 = -1;
+	std::stringstream ss;
+	ss << "p0_cached_SNRdB" << snrdB << "_R" << r << ".dat";
+	std::string filename = ss.str();
+	
+	std::ifstream ifs(filename);
+	if (ifs.good()) {
+		ifs >> p0;
+	}
+	ifs.close();
+	return p0;
+};
+
+void SaveCachedSNRdB(double snrdB, double r, double p0) {
+	std::stringstream ss;
+	ss << "p0_cached_SNRdB" << snrdB << "_R" << r << ".dat";
+	std::string filename = ss.str();
+
+	std::ofstream ofs(filename);
+	ofs << p0;
+	ofs.flush();
+	ofs.close();
+};
+
 double MiscUtils::ConvertSNRdBToProbability(double snrdB, double r) {
-	double snr = ConvertSNRdBToSNR(snrdB);
-	double qArg = sqrt(2.0 * r * snr);
-	double p0 = ComputeQFunc(qArg);
+	double p0;
+	p0 = LoadCachedSNRdB(snrdB, r);
+	if (p0 == -1) {
+		double snr = ConvertSNRdBToSNR(snrdB);
+		double qArg = sqrt(2.0 * r * snr);
+		p0 = ComputeQFunc(qArg);
+		SaveCachedSNRdB(snrdB, r, p0);
+	}
 	return p0;
 	
 };

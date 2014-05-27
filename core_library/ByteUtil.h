@@ -38,6 +38,7 @@ public:
 	static byte ReverseBitsInByte(byte original);
 
 	static bool *ConvertBitsToBoolArray(byte *bits, int count);
+	static void ConvertBitsToBoolArray(byte *bits, int count, bool *existingBoolArr);
 
 	static void SetBitForByteData(byte *byteData, int countBits, int indexBit, bool bitValue);
 	static bool GetBitForByteData(byte *byteData, int countBits, int indexBit);
@@ -45,5 +46,7 @@ public:
 	static void FindBitLocationInData(byte *data, int countBits, int indexBit, byte &foundByte, int &foundIndexByte, int &foundIndexBit);
 	static byte *CopyBitsData(byte *bitsData, int lenBits);
 	static bool Xor(bool left, bool right);
+
+	static bool *CopyBoolArray(bool *arr, int len);
 };
 }

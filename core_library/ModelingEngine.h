@@ -7,6 +7,7 @@
 #include "DataBlockGenerator.h"
 #include "ModelingResultItem.h"
 #include <vector>
+#include <queue>
 
 namespace ThresholdDecoding {
 
@@ -36,7 +37,7 @@ namespace ThresholdDecoding {
 				float randPercent = ((float)rand())/((float)RAND_MAX) * 100.0f;
 				bool needsNoise = pNoisePercent >= randPercent;
 				if (needsNoise) {
-					printf("Making noise in bit=%u...\n", i);
+					//printf("Making noise in bit=%u...\n", i);
 					ByteUtil::InvertBitInByteData(noisedData, dataLen, i);
 				}
 			}
@@ -58,6 +59,7 @@ namespace ThresholdDecoding {
 			pBitResult = 0;
 			pResult = 0;
 			pBlock = 0;
+			totalCountIterations = 0;
 		};
 
 		virtual ~TotalSimulationResult() {
@@ -72,6 +74,7 @@ namespace ThresholdDecoding {
 		float pBitResult;
 		float pResult;
 		float pBlock;
+		int totalCountIterations;
 	};
 
 class ModelingEngine : public BaseClass {
@@ -84,14 +87,17 @@ private:
 	DataBlockGenerator *_generator;
 	int _decoderTactsLatency;
 	std::vector<ModelingResultItem *> *_items;
+	std::queue<ModelingResultItem *> *_workingItemsQueue;
 	int _counter;
 	DataTransmissionChannel *_channel;
+	bool _storeItems;
 	
 public:
 	ModelingEngine(Coder *coder, DataBlockGenerator *generator, float pNoise, int originalDataBitsLen);
 	virtual ~ModelingEngine(void);
 	void Init();
-	
+	void SetStoreItems(bool store);
+
 	TotalSimulationResult *SimulateTotal(int volume, int limitErrors);
 	ModelingResultItem *SimulateIteration();
 	int GetNoiseCount();

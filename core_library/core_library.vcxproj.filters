@@ -84,6 +84,9 @@
     <ClInclude Include="DataBlockGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MultiThresholdCoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core_library.cpp">
@@ -153,6 +156,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiThresholdCoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
