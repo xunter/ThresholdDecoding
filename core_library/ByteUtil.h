@@ -20,13 +20,13 @@ public:
 	static void ShowDataBlockOnConsole(byte *dataBlock, int dataBlockLen);
 	static bool IsDataEqual(byte *dataFirst, byte *dataSecond, int bitLength);
 	static byte *CopyData(byte *data, int len);
-	static byte GetOnlyBitByte(byte &b, int bitPos);
+	static byte GetOnlyBitByte(const byte &b, int bitPos);
 	static byte InvertByte(byte b);
 	static void SetBitValue(byte &b, int posBit, bool bitValue);
 	static void SetBit(byte &b, int bitPos);
 	static void UnsetBit(byte &b, int bitPos);
 	static void InvertBit(byte &b, int bitPos);
-	static bool IsBitSettedInByte(byte &b, int bitPos);
+	static bool IsBitSettedInByte(const byte &b, int bitPos);
 
 	void ByteUtil::QSort(byte *arr, int min, int max);
 	void ByteUtil::SwapBytes(byte *num, byte *num2);
@@ -34,6 +34,7 @@ public:
 	static int ByteUtil::ComputeBitDiff(byte *left, byte *right, int len);
 
 	static byte *StoreBoolArrayAsBytes(bool *boolArr, int lengthBoolArr, int &lengthByteArr);
+	static byte *StoreBoolVectorAsBytes(const std::vector<bool> &vecBools, int &lenByteArray);
 
 	static byte ReverseBitsInByte(byte original);
 
@@ -45,7 +46,7 @@ public:
 	static void InvertBitInByteData(byte *byteData, int countBits, int indexBit);
 	static void FindBitLocationInData(byte *data, int countBits, int indexBit, byte &foundByte, int &foundIndexByte, int &foundIndexBit);
 	static byte *CopyBitsData(byte *bitsData, int lenBits);
-	static bool Xor(bool left, bool right);
+	static bool Xor(const bool &left, const bool &right);
 
 	static bool *CopyBoolArray(bool *arr, int len);
 };

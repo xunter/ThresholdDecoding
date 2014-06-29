@@ -1,8 +1,18 @@
-// HemingModelingTool.cpp : Defines the entry point for the console application.
-//
+/*
+Программное средство для моделирования системы связи с помехами для получения результатов эффективности методов коррекции ошибок.
+Реализованы декодеки для: кодов Хемминга, порогового декодирования, многопорогового декодирования.
+Данная программа является частью магистерской диссертации на тему 
+"ПОВЫШЕНИЕ ЭФФЕКТИВНОСТИ МНОГОПОРОГОВОГО ДЕКОДИРОВАНИЯ ЗА СЧЕТ ВЫБОРА НАИБОЛЕЕ ЭФФЕКТИВНОГО САМООРТОГОНАЛЬНОГО КОДА"
+по направлению 231000 – Программная инженерия.
+Диссертант: студент-магистрант группы 843М Назаров Павел Андреевич
+Научный руководитель: д.т.н., доцент кафедры ВПМ Овечкин Геннадий Владимирович
+2014 год
+*/
 #include "stdafx.h"
 
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <fstream>
 #include "Coder.h"
 
@@ -31,14 +41,51 @@ void ConsoleUserPrompt() {
 };
 
 
+void CalculateSNRdBToP0FromZTable(float snrdB, double &p0) {
+	char *filename = "snrdB_p0_table.txt";
+	std::ifstream ifs(filename);
+	std::string str;
+	while (true) {
+		getline(ifs, str);
+		std::vector<std::string> vecParts;
+		StringUtils::Split(str, ' ', vecParts);
+		std::string &snrdbStr = vecParts[0];
+		int indexComma = snrdbStr.find(',');
+		snrdbStr[indexComma] = '.';
+		double snrdbFromFile;
+		std::stringstream(snrdbStr) >> snrdbFromFile;
+		if (snrdbFromFile == snrdB) {
+			std::string pStr = vecParts[1];
+			std::vector<std::string> vecP0Parts;
+			StringUtils::Split(pStr, 'e', vecP0Parts);
+			std::string mPartStr = vecP0Parts[0];
+			std::string pPartStr = vecP0Parts[1];
+			char sign = pPartStr[0];
+			pPartStr = pPartStr.substr(3);
+			mPartStr[mPartStr.find(',')] = '.';
+			double m = atof(mPartStr.c_str());
+			double p = atof(pPartStr.c_str());
+			p0 = m;
+			for (int i = 0; i < p; i++) {
+				if (sign == '-') p0 /= 10;
+				else p0 *= 10;
+			}
+			break;
+		}
+	}
+	ifs.close();
+};
+
 //The method reads app values from the passed arguments array
-void ReadArgsValuesFromArgsArray(std::vector<std::string> &vecArgs, std::string &polynom, int &v, float &p0, float &snrdB, int &m, float &R, std::string &filenameCoderDefinition, std::string &filenameResults, bool &useRawResultData, int &decoderType, int &countSections) {
+void ReadArgsValuesFromArgsArray(std::vector<std::string> &vecArgs, std::string &polynom, long &v, double &p0, float &snrdB, long &m, float &R, std::string &filenameCoderDefinition, std::string &filenameResults, bool &useRawResultData, int &decoderType, int &countSections, std::string &filenameDefaultArgs, int &p0ComputingMode) {
 	int argc = vecArgs.size();
 	const char *DEFAULT_filenameCoderDefinition = "coder_definition.txt";
 	const char *DEFAULT_filenameResults = "results.txt";
+	const char *DEFAULT_filenameDefaultArgs = "default_args.txt";
 	
 	filenameCoderDefinition = "";
 	filenameResults = "";
+	filenameDefaultArgs = "";
 	
 	bool loadPolynomFromFile = false;
 	int argsCount = argc;
@@ -96,6 +143,12 @@ void ReadArgsValuesFromArgsArray(std::vector<std::string> &vecArgs, std::string 
 			}
 		}
 		
+		if (strcmp("--filenameDefaultArgs", currChar) == 0) {			
+			if (i < argsCount - 1) {
+				filenameDefaultArgs = nextChar;
+			}
+		}
+		
 		if (strcmp("--useRawResultData", currChar) == 0) {
 			if (i < argsCount - 1) {
 				useRawResultData = strcmp(nextChar, "1") == 0;
@@ -105,12 +158,19 @@ void ReadArgsValuesFromArgsArray(std::vector<std::string> &vecArgs, std::string 
 		if (strcmp("--decoderType", currChar) == 0) {
 			if (i < argsCount - 1) {
 				decoderType = strcmp(nextChar, "basic") == 0 ? 1 : 2;
+				if (strcmp(nextChar, "none") == 0) decoderType = 0;
 			}
 		}
 		
 		if (strcmp("--countSections", currChar) == 0) {
 			if (i < argsCount - 1) {
 				countSections = atoi(nextChar);
+			}
+		}
+		
+		if (strcmp("--p0ComputingMode", currChar) == 0) {
+			if (i < argsCount - 1) {
+				p0ComputingMode = atoi(nextChar);
 			}
 		}
 	}
@@ -128,9 +188,10 @@ void ReadArgsValuesFromArgsArray(std::vector<std::string> &vecArgs, std::string 
 	
 	if (filenameCoderDefinition == "") filenameCoderDefinition = DEFAULT_filenameCoderDefinition;
 	if (filenameResults == "") filenameResults = DEFAULT_filenameResults;
+	if (filenameDefaultArgs == "") filenameDefaultArgs = DEFAULT_filenameDefaultArgs;
 };
 
-bool ReadCoderDefinitionItem(ifstream &inputStream, CoderDefinitionItem &item) {
+bool ReadCoderDefinitionItem(ifstream &inputStream, CoderDefinitionItem &item, bool &branchIndexZeroBased) {
 	if (inputStream.eof()) {
 		return false;
 	}
@@ -149,7 +210,6 @@ bool ReadCoderDefinitionItem(ifstream &inputStream, CoderDefinitionItem &item) {
 	}
 	delete termsAll;
 	std::map<std::string, std::string> mapProps;
-	bool indexBranchZeroBased = false;
 	for (int i = 0; i < terms->size(); i++) {
 		std::string termString = terms->at(i);
 		int indexEqual = termString.find('=');
@@ -192,10 +252,10 @@ bool ReadCoderDefinitionItem(ifstream &inputStream, CoderDefinitionItem &item) {
 			key = "j";
 		}
 		std::string val = pairs->at(1);
-		if ((key == "i" || key == "j") && val == "0") {
-			indexBranchZeroBased = true;
+		if ((key == "i" || key == "j") && val == "0" && !branchIndexZeroBased) {
+			branchIndexZeroBased = true;
 		}
-		if (indexBranchZeroBased && (key == "i" || key == "j")) {
+		if (branchIndexZeroBased && (key == "i" || key == "j")) {
 			int valNum = atoi(val.c_str());
 			valNum++;
 			char *buffer = new char[256];
@@ -208,24 +268,30 @@ bool ReadCoderDefinitionItem(ifstream &inputStream, CoderDefinitionItem &item) {
 	delete terms;
 	item.i = atoi( mapProps.at("i").c_str() );
 	item.j = atoi( mapProps.at("j").c_str() );
-	item.countBranches = atoi( mapProps.at("c").c_str() );
-	std::string polynomStr = mapProps["p"];
-	GeneratingPolynom polynom(polynomStr);
-	polynom.Init();
-	polynom.GetFactorsVector(item.powersPolynom);
+	item.countBranches = 0;
+	if (mapProps.count("c") > 0) {
+		item.countBranches = atoi( mapProps.at("c").c_str() );
+	}
+	if (mapProps.count("p") > 0) {
+		std::string polynomStr = mapProps["p"];
+		GeneratingPolynom polynom(polynomStr);
+		polynom.Init();
+		polynom.GetFactorsVector(item.powersPolynom);
+	}
 	return true;
 };
 
 void LoadCoderDefinitionItemsFromFile(std::string &filename, std::vector<CoderDefinitionItem> &items, bool useRawResultData = false) {
 	std::string polynomText = "";
+	bool branchIndexZeroBased = false;
 	ifstream inputStream (filename.c_str());
 	if (useRawResultData) {
 
-		char lineBuf[1024];
+		char lineBuf[32768];
 		
 		bool foundSmin = false;
 		while (!foundSmin) {
-			inputStream.getline(lineBuf, 1024);
+			inputStream.getline(lineBuf, 32768);
 			foundSmin = strstr(lineBuf, "Smin") != 0;
 		}
 		if (foundSmin) {
@@ -234,7 +300,7 @@ void LoadCoderDefinitionItemsFromFile(std::string &filename, std::vector<CoderDe
 	}
 	while (true) {
 		CoderDefinitionItem item;
-		if (ReadCoderDefinitionItem(inputStream, item)) {
+		if (ReadCoderDefinitionItem(inputStream, item, branchIndexZeroBased)) {
 			items.push_back(item);
 		} else {
 			break;
@@ -243,52 +309,85 @@ void LoadCoderDefinitionItemsFromFile(std::string &filename, std::vector<CoderDe
 	inputStream.close();
 };
 
-void SaveResultsToFile(TotalSimulationResult *totalResult, float &p0, float &snrdB, std::string &filename, time_t &timeStart, time_t &timeEnd) {
+void SaveResultsToFile(TotalSimulationResult *totalResult, double &p0, float &snrdB, std::string &filename, time_t &timeStart, time_t &timeEnd) {
 	ofstream fout;
 	fout.open (filename);
 		
-	float pNoise = totalResult->pNoise;
-	float pBitResult = totalResult->pBitResult;
-	float pResult = totalResult->pResult;
-	float pBlock = totalResult->pBlock;	
+	double pNoise = totalResult->pNoise;
+	double pBitResult = totalResult->pBitResult;
+	double pResult = totalResult->pResult;
+	double pBlock = totalResult->pBlock;	
 		
-	fout << "Time_start = " << std::ctime(&timeStart) << endl;
-	fout << "Time_end = " << std::ctime(&timeEnd) << endl;
-	fout << "Total_iterations = " << std::scientific << totalResult->totalCountIterations << endl;	
+	fout << "Time_start = " << std::ctime(&timeStart);
+	fout << "Time_end = " << std::ctime(&timeEnd);
+	fout << "Total_iterations = " << std::scientific << std::setbase(10) << totalResult->totalCountIterations << endl;	
 	fout << "SNRdB = " << snrdB << endl;
-	fout << "P0 = " << std::scientific << p0 << " %" << endl;
-	fout << "Pb = " << std::scientific << pBitResult << " %" << endl;
-	fout << "PB = " << std::scientific << pBlock << " %" << endl;
+	fout << "P0 = " << std::scientific << p0 << endl;
+	fout << "Pb = " << std::scientific << pBitResult << endl;
+	fout << "PB = " << std::scientific << pBlock << endl;
 	
 	fout.close();
 };
 
+char *GetArgValue(char **argv, int argc, char *nameArg) {
+	for (int i = 0; i < argc; i++) {
+		char *str = argv[i];
+		char *nextStr = null;
+		if (i < argc - 1) {
+			nextStr = argv[i + 1];
+		}
+		if (strcmp(str, nameArg) == 0) {
+			return nextStr;
+		}
+	}
+	return NULL;
+};
+
+bool CheckArgExist(char **argv, int argc, char *nameArg) {
+	char *valueActual = GetArgValue(argv, argc, nameArg);
+	bool exist = valueActual != NULL;
+	return exist;
+};
+
 int main(int argc, char *argv[])
 {	
-	try {
-		int v = 0; //Количество итераций
-		int mMax = 0; //Количество ошибочных битов на выходе декодера
-		int mCounter = 0; // M = 1000, Volume
+	//try {
+		long v = 0; //Количество итераций
+		long mMax = 0; //Количество ошибочных битов на выходе декодера
+		long mCounter = 0; // M = 1000, Volume
 		string polynom;
 		bool loadPolynomFromFile = false;
-		float p0 = 0.0; //Вероятность искажения бита при передаче
+		double p0 = 0.0; //Вероятность искажения бита при передаче
 		int n0, k0;
 		float R;
 		float snrdB;
 		std::string filenameCoderDefinition;
 		std::string filenameResults;
+		std::string filenameDefaultArgs = "default_args.txt";
 		int argsCount = argc;
 		bool useRawResultData = false;
 		int decoderType = 1; //1 - basic, 2 - multi
 		int countSections = 1;
 		std::vector<std::string> vecArgs;
+		int p0ComputingMode = 0;
+
+		bool filenameDefaultArgsSpecified = false;		
+		filenameDefaultArgsSpecified = CheckArgExist(argv, argc, "--filenameDefaultArgs");
+		if (filenameDefaultArgsSpecified) {
+			filenameDefaultArgs = GetArgValue(argv, argc, "--filenameDefaultArgs");
+		}
 
 		if (argc == 1) {
 			std::string defaultArgsStr;
-			char *defaultArgsFilename = "default_args.txt";
+			const char *defaultArgsFilename = filenameDefaultArgs.c_str();
+#if _DEBUG
+			defaultArgsFilename = "C:\\Users\\xunter\\SkyDrive\\Documents\\Education\\ma_diser\\my_decoding_tool\\default_args.txt";
+			
+#endif
 			ifstream defaultArgsIF(defaultArgsFilename);
 			getline(defaultArgsIF, defaultArgsStr);
 			defaultArgsIF.close();
+
 		
 			StringUtils::Split(defaultArgsStr, ' ', vecArgs);
 				
@@ -299,8 +398,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	
-		ConsoleUserPrompt();
-		ReadArgsValuesFromArgsArray(vecArgs, polynom, v, p0, snrdB, mMax, R, filenameCoderDefinition, filenameResults, useRawResultData, decoderType, countSections);
+		ReadArgsValuesFromArgsArray(vecArgs, polynom, v, p0, snrdB, mMax, R, filenameCoderDefinition, filenameResults, useRawResultData, decoderType, countSections, filenameDefaultArgs, p0ComputingMode);
 		
 		std::vector<CoderDefinitionItem> coderDefinitionItems;
 		
@@ -309,7 +407,12 @@ int main(int argc, char *argv[])
 		CoderDefinition coderDefinition;
 		coderDefinition.itemsCoderDefinition = coderDefinitionItems;
 		k0 = coderDefinition.GetCountInputs();
-		n0 = coderDefinition.GetCountOutputs();
+		
+		if (decoderType == 0) {
+			n0 = k0;
+		} else {
+			n0 = coderDefinition.GetCountOutputs();
+		}
 
 		R = (float)k0 / n0;
 
@@ -317,12 +420,17 @@ int main(int argc, char *argv[])
 		coderDefinition.n0 = n0;
 		coderDefinition.R = R;
 
-		if (p0 == 0 && snrdB > 0) {
+		if (p0 == 0) {
 			//SNRdB = 5 p0 = 0.037678987
 			//SNRdB = 6 p0 = 0.023007140
-			p0 = MiscUtils::ConvertSNRdBToProbability(snrdB, R);
-		}
+			if (p0ComputingMode == 0) {
+				p0 = MiscUtils::ConvertSNRdBToProbability(snrdB, R);
+			} else if (p0ComputingMode == 1) {
+				CalculateSNRdBToP0FromZTable(snrdB, p0);
+			}
 
+			//CalculateSNRdBToP0(snrdB, p0);
+		}
 		cout << "M = " << mMax << endl;
 		cout << "SNRdB = " << snrdB << endl;
 		cout << "V = " << v << endl;
@@ -353,19 +461,25 @@ int main(int argc, char *argv[])
 	
 		ConvSelfOrthCoder *coder = null;
 		int decoderLatency = m;
-		if (decoderType == 1) {		
+		if (decoderType == 0) {
+			decoderLatency = 0;
+		} else if (decoderType == 1) {		
 			coder = new ConvSelfOrthCoder(&coderDefinition, m, k0, n0, true);
 		} else if (decoderType == 2) {
 			coder = new MultiThresholdCoder(countSections, &coderDefinition, m, k0, n0, true);
 			decoderLatency = decoderLatency * countSections;
 		}
 
-		coder->Init();
+		if (coder != NULL) coder->Init();
 
 		ModelingEngine *modelingEngine = new ModelingEngine(coder, generator, p0, k0);
-		modelingEngine->SetDecoderLatency(m);
+		modelingEngine->SetDecoderLatency(decoderLatency);
+#if _DEBUG
+		//modelingEngine->SetDebugMode(true);
+#endif
 		DataTransmissionChannel *channel = new BinarySymmetricChannel(p0);
 		modelingEngine->SetChannel(channel);
+		modelingEngine->Init();
 
 		TotalSimulationResult * totalResult = modelingEngine->SimulateTotal(mCounter, mMax);
 		ModelingResultItemStorage *itemStorage = new ModelingResultConsoleItemStorage();
@@ -375,14 +489,14 @@ int main(int argc, char *argv[])
 		time_t time_end;
 		time(&time_end);
 
-		float pNoise = totalResult->pNoise;
-		float pBitResult = totalResult->pBitResult;
-		float pResult = totalResult->pResult;
-		float pBlock = totalResult->pBlock;	
+		double pNoise = totalResult->pNoise;
+		double pBitResult = totalResult->pBitResult;
+		double pResult = totalResult->pResult;
+		double pBlock = totalResult->pBlock;	
 			
-		cout << "Time_start = " << std::ctime(&time_start) << endl;
-		cout << "Time_end = " << std::ctime(&time_end) << endl;
-		cout << "Total iterations " << std::scientific << totalResult->totalCountIterations << endl;
+		cout << "Time_start = " << std::ctime(&time_start);
+		cout << "Time_end = " << std::ctime(&time_end);
+		cout << "Total iterations = " << std::scientific << std::setbase(10) << totalResult->totalCountIterations << endl;
 		cout << "SNRdB = " << snrdB << endl;
 		cout << "P0 = " << std::scientific << p0 << endl;
 		cout << "Pb = " << std::scientific << pBitResult << endl;
@@ -396,13 +510,5 @@ int main(int argc, char *argv[])
 		delete channel;
 		BaseClass::Clean(coder);
 		BaseClass::Clean(generator);
-				
-	} catch (...) {
-		std::cout << "An exception has been occurred while the app is working!" << endl;
-#if _DEBUG
-		throw;
-#endif
-		ConsoleUserPrompt();
-	}
 	return 0;
 };

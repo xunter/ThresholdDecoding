@@ -1,1 +1,1 @@
---decoderType basic -m 1000 -snrdB 4 --filenameCoderDefinition C:\Users\xunter\SkyDrive\Documents\Education\ma_diser\SOC_gen_tool\result_k1_n2_R1r2_N100_d5.txt --useRawResultData 1
+--decoderType basic -m 1000 -snrdB -7 --filenameCoderDefinition C:\Users\xunter\SkyDrive\Documents\Education\ma_diser\SOC_gen_tool\result_k1_n2_R1r2_N100_d5.txt --useRawResultData 1 --p0ComputingMode 1 --filenameResults C:\Users\xunter\SkyDrive\Documents\Education\ma_diser\decoding_done\done_result_k1_n2_R1r2_N100_d5_snrdB-7.txt

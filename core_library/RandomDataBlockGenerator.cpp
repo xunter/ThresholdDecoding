@@ -9,18 +9,19 @@ RandomDataBlockGenerator::RandomDataBlockGenerator(int dataBlockLen) : DataBlock
 byte *RandomDataBlockGenerator::GenerateBlock() {
 	int len = GetDataBlockLength();
 	int byteLen = ByteUtil::GetByteLenForDataLen(len);
+		
 	byte *arr = new byte[byteLen];
-	int dataBitCounter = 0;
-	for (int i = 0; i < byteLen; i++) {
-		byte c = ByteUtil::GenerateByte();
-		dataBitCounter += BYTE_BIT_LEN;
-		if (dataBitCounter > len) {
-			int diff = dataBitCounter - len;
-			int dataBitsLen = BYTE_BIT_LEN - diff;
-			c = ByteUtil::FillDataInByte(c, dataBitsLen);
+	
+	for (int i = 0; i < len; i++) {
+		arr[i] = 0x00;
+		if ((rand() % 100) % 2 == 0) {
+			int indexByte = floor((float)i / BYTE_BIT_LEN);
+			int indexBitInByte = i % BYTE_BIT_LEN;
+			byte &b = arr[indexByte];
+			ByteUtil::InvertBit(b, indexBitInByte);
 		}
-		arr[i] = c;
-	}		
+	}
+
 	return arr;
 }
 }

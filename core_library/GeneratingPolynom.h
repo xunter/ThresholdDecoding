@@ -23,6 +23,7 @@ public:
 private:
 	string *_polynomStr;
 	BinaryMatrix *_polynomFactors;
+	std::vector<int> _vecPowers;
 	int _polynomPower;
 
 };

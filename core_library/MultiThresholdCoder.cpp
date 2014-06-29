@@ -28,11 +28,16 @@ void MultiThresholdCoder::Init()
 	} else {
 		InitDiffRegistries();
 
-		_arrSyndromeInitVals = new bool[_n0 - _k0];
+		int sizeSyndromeInitVals = _n0 - _k0;
+		_arrSyndromeInitVals = new bool[sizeSyndromeInitVals];
 		_arrThresholdConditions = new bool[_k0];
 		_arrDiffInitVals = new bool[_k0];
 		for (int i = 0; i < _k0; i++) {
 			_arrDiffInitVals[i] = false;
+			_arrThresholdConditions[i] = false;
+		}
+		for (int i = 0; i < sizeSyndromeInitVals; i++) {
+			_arrSyndromeInitVals[i] = false;
 		}
 	}
 };
@@ -51,8 +56,7 @@ void MultiThresholdCoder::InitDiffRegistries()
 	}
 }
 
-bool *MultiThresholdCoder::DecodeCore(bool *encodedBits) {
-	bool *arrDecodedBits = null;
+void MultiThresholdCoder::DecodeCore(bool *encodedBits, std::vector<bool> &vecDecoded) {
 	if (IsHubDecoder()) {
 		MultiThresholdCoder *prevCoder = null;
 		MultiThresholdCoder *nextCoder = null;
@@ -60,67 +64,63 @@ bool *MultiThresholdCoder::DecodeCore(bool *encodedBits) {
 		int countSyndromeRegistries = _n0 - _k0;
 
 		bool diffVal = false;
-		bool *arrDataVals = new bool[_k0];
-		bool *arrDiffVals = new bool[_k0];
-		bool *arrCondVals = new bool[_k0];
-		bool *arrSyndVals = new bool[countSyndromeRegistries];
+
+		std::vector<bool> vecDataVals(_k0, false);
+		std::vector<bool> vecDiffVals(_k0, false);
+		std::vector<bool> vecCondVals(_k0, false);
+		std::vector<bool> vecSyndVals(countSyndromeRegistries, false);
 		
 		bool *arrEncodedBits = ByteUtil::CopyBoolArray(encodedBits, _n0);
 
 		for (int i = 0; i < _countDecoderSections; i++) {
 			MultiThresholdCoder *currCoder = _decoderSectionsCoders->at(i);
-			if (i < _countDecoderSections - 1) {
-				nextCoder = _decoderSectionsCoders->at(i + 1);
-			}
+			if (i < _countDecoderSections - 1) nextCoder = _decoderSectionsCoders->at(i + 1);
+			else nextCoder = null;
 						
 			if (prevCoder != null) {				
 				for (int j = 0; j < _k0; j++) {
-					bool cond = arrCondVals[j];
-					bool diff = arrDiffVals[j];
-					bool data = arrDataVals[j];
-					bool synd = arrSyndVals[j];
-					if (cond) {
-						diff = !diff;
-					}
+					const bool &cond = vecCondVals[j];
+					bool diff = ByteUtil::Xor(vecDiffVals[j], cond);
+					const bool &data = vecDataVals[j];
 
 					currCoder->_arrDiffInitVals[j] = diff;
-					currCoder->_arrSyndromeInitVals[j] = synd;
 
 					arrEncodedBits[j] = data;
 				}
+				for (int j = 0; j < countSyndromeRegistries; j++) {
+					bool synd = vecSyndVals[j];
+					currCoder->_arrSyndromeInitVals[j] = synd;
+				}
 			}
-						
-			bool *decodedBits = currCoder->DecodeCore(arrEncodedBits);
+					
+			std::vector<bool> vecDecodedBitsCurrCoder(_k0, false);
+			currCoder->DecodeCore(arrEncodedBits, vecDecodedBitsCurrCoder);
 
 			for (int j = 0; j < _k0; j++) {
-				arrDataVals[j] = decodedBits[j];
+				vecDataVals[j] = vecDecodedBitsCurrCoder[j];
 			}
 								
 			for (int j = 0; j < _k0; j++) {
 				BinaryMatrix *diffMatrix = currCoder->_diffRegistries->at(j);
-				arrDiffVals[j] = diffMatrix->GetLastZeroRowItem();
+				vecDiffVals[j] = diffMatrix->GetLastZeroRowItem();
 			}
 				
 			for (int j = 0; j < _k0; j++) {
-				arrCondVals[j] = currCoder->_arrThresholdConditions[j];
+				vecCondVals[j] = currCoder->_arrThresholdConditions[j];
 			}
 				
 			for (int j = 0; j < countSyndromeRegistries; j++) {
 				BinaryMatrix *synd = currCoder->_syndromeRegistries->at(j);
-				arrSyndVals[j] = synd->GetItem(0, synd->GetColCount() - 1);
+				vecSyndVals[j] = synd->GetItem(0, synd->GetColCount() - 1);
 			}
 
 			prevCoder = currCoder;
 
 			if (nextCoder == null) {
-				arrDecodedBits = decodedBits;
+				for (int j = 0; j < _k0; j++) vecDecoded[j] = vecDecodedBitsCurrCoder[j];
 			}
 		}
-
-		delete [] arrSyndVals;
-		delete [] arrCondVals;
-		delete [] arrDiffVals;
-		delete [] arrDataVals;
+		delete [] arrEncodedBits;
 	} else {
 
 		for (int i = 0; i < _k0; i++) {
@@ -130,9 +130,38 @@ bool *MultiThresholdCoder::DecodeCore(bool *encodedBits) {
 			diffReg->SetItem(0, 0, initVal);
 		}
 
-		arrDecodedBits = ConvSelfOrthCoder::DecodeCore(encodedBits);
+		ConvSelfOrthCoder::DecodeCore(encodedBits, vecDecoded);
 	}
-	return arrDecodedBits;
+};
+
+void MultiThresholdCoder::DisplayDebugInfo(const char *label) {
+	
+	if (IsHubDecoder()) {
+		DisplayDebugInfoCoderDataRegistry();
+
+		for (int i = 0; i < _decoderSectionsCoders->size(); i++) {
+			char nbuf[256];
+			itoa(i, nbuf, 10);
+			std::string labelReg = "Section coder ";
+			labelReg = labelReg + nbuf;
+			_decoderSectionsCoders->at(i)->DisplayDebugInfo(labelReg.c_str());
+		}	
+	} else {
+		ConvSelfOrthCoder::DisplayDebugInfo(label);
+	}
+};
+
+void MultiThresholdCoder::DisplayDebugInfoExternalCoder(const char *label) {	
+	ConvSelfOrthCoder::DisplayDebugInfoExternalCoder(label);
+	int countDiffRegs = GetCountCoderRegistries();
+	
+	char nbuf[256];
+	for (int i = 0; i < countDiffRegs; i++) {
+		itoa(i, nbuf, 10);
+		std::string labelReg = "Decoder diff registry ";
+		labelReg = labelReg + nbuf;
+		_diffRegistries->at(i)->DisplayConsole(labelReg.c_str());
+	}
 };
 
 int MultiThresholdCoder::GetSizeDiffRegistry()
@@ -153,12 +182,13 @@ void MultiThresholdCoder::InitDecoderSectionsCoders() {
 		if (i == 0) {
 			coder->_firstSection = true;
 		}
+		coder->Init();
 		_decoderSectionsCoders->push_back(coder);
 	}
 };
 
 
-void MultiThresholdCoder::SetNextSyndromeVal(int indexBit, BinaryMatrix *syndrome, bool nextVal) {
+void MultiThresholdCoder::SetNextSyndromeVal(int indexBit, BinaryMatrix *syndrome, const bool &nextVal) {
 	ShiftSyndromeRegistryRight(syndrome);
 	if (_firstSection) {
 		syndrome->SetItem(0, 0, nextVal);
@@ -179,26 +209,29 @@ bool MultiThresholdCoder::CheckThresholdConditionSyndrome(int indexOutput, std::
 	return condition;
 };
 
-bool MultiThresholdCoder::CheckThresholdCondition(int indexOutput) {
-	bool baseCheckResult = ConvSelfOrthCoder::CheckThresholdCondition(indexOutput);
+bool MultiThresholdCoder::CheckThresholdCondition(int indexData, std::vector<CoderDefinitionItem *> *vecCheckBranchItems) {
+	bool baseCheckResult = ConvSelfOrthCoder::CheckThresholdCondition(indexData);
 	bool resultVal = baseCheckResult;
-	_arrThresholdConditions[indexOutput] = resultVal;
+	_arrThresholdConditions[indexData] = resultVal;
 	return baseCheckResult;
 };
 
 MultiThresholdCoder::~MultiThresholdCoder(void)
 {
-	delete [] _arrThresholdConditions;
-	if (_arrCoderRegistries != null) 
-	{
-		delete [] _arrCoderRegistries;
-	}
-	if (_arrDiffInitVals != null) {
+	if (IsHubDecoder()) {
+		for (int i = 0; i < _countDecoderSections; i++) {
+			delete _decoderSectionsCoders->at(i);
+		}
+		delete _decoderSectionsCoders;
+	} else {
+		delete [] _arrThresholdConditions;
 		delete [] _arrDiffInitVals;
-	}
-	if (_arrSyndromeInitVals != null) {
 		delete [] _arrSyndromeInitVals;
+
+		for (int i = 0; i < _diffRegistries->size(); i++) delete _diffRegistries->at(i);
+		delete _diffRegistries;
 	}
+
 }
 
 }

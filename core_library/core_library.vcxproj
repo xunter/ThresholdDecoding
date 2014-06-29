@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.ico" />
+    <None Include="ClassDiagram11.cd" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,7 @@ double MiscUtils::ConvertSNRdBToProbability(double snrdB, double r) {
 	if (p0 == -1) {
 		double snr = ConvertSNRdBToSNR(snrdB);
 		double qArg = sqrt(2.0 * r * snr);
+
 		p0 = ComputeQFunc(qArg);
 		SaveCachedSNRdB(snrdB, r, p0);
 	}
@@ -86,6 +87,10 @@ double ComputeQFuncIntegralFrom0ToX(double x) {
 
 	return sum;
 }
+
+double ComputeQFuncIntegralDirt(double x) {
+	return (1 / sqrt(2 * M_PI)) * exp( - (x * x / 2));
+};
 
 double ComputeQFuncIntegral(double x) {
 	double eps = 1E-9;
@@ -148,9 +153,24 @@ double ComputeQFuncIntegral(double x) {
 	return sum;
 }
 
+double ComputeGaussianIntegralQuadratic(double x, int n = 0, double h = 1e-5, double e = 1e-10) {
+	double sum = 0;
+	double currX = x;
+	while (true) {		
+		double currFuncVal = exp( - 0.5 * pow(currX, 2) );
+		double currArea = currFuncVal * h;
+		if (currArea <= e) break;
+		sum += currArea;
+		currX += h;
+	}
+	return sum;
+};
+
 double MiscUtils::ComputeQFunc(double arg) {
 	double factor = 1.0 / (sqrt(2.0 * M_PI));
-	double integralValue = ComputeQFuncIntegral(arg);
+	//double integralValue = ComputeQFuncIntegral(arg);
+	//double integralValue = ComputeQFuncIntegralDirt(arg);
+	double integralValue = ComputeGaussianIntegralQuadratic(arg);
 	double result = factor * integralValue;
 	return result;
 }

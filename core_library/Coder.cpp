@@ -6,5 +6,9 @@ namespace ThresholdDecoding {
 	int Coder::GetEncodedBytesCount() {
 		return ByteUtil::GetByteLenForDataLen(GetEncodedBitsCount());
 	}
+
+	void Coder::DisplayDebugInfo(const char *label) {
+		
+	};
 }
 

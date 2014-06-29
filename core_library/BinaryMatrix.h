@@ -7,7 +7,7 @@ namespace ThresholdDecoding {
 
 class BinaryMatrix : public BaseClass {
 private:
-	std::vector<bool> *_matrixMemory;
+	std::vector<bool> _matrixMemory;
 	int _lengthOfMatrixItems;
 	int _row;
 	int _col;
@@ -21,8 +21,8 @@ public:
 
 	int GetRowCount();
 	int GetColCount();
-	void SetItem(int row, int col, bool val);
-	bool GetItem(int row, int col);
+	void SetItem(int row, int col, const bool &val);
+	bool GetItem(int row, int col) const;
 	void InvertItem(int row, int col);
 
 	bool GetLastZeroRowItem();
@@ -50,8 +50,8 @@ public:
 	void ShiftRight(int count);
 	void ShiftRightOnce();
 
-	void DisplayConsole(char *name);
-	
+	void DisplayConsole(const char *name);
+		
 	bool IsSubMatrixEquals(int rowStart, int rowEnd, int colStart, int colEnd, BinaryMatrix *other);
 	
 	static BinaryMatrix *CreateIdentityMatrix(int size);

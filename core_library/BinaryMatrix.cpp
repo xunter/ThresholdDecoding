@@ -47,7 +47,7 @@ BinaryMatrix *BinaryMatrix::LoadFromByteArray(byte *data, int row, int col) {
 				arrIndex++;
 				bitCounter = 0;
 			}
-			byte tempByte = data[arrIndex];
+			byte &tempByte = data[arrIndex];
 			matrix->SetItem(i, j, ByteUtil::IsBitSettedInByte(tempByte, bitCounter));
 		}
 	}
@@ -57,9 +57,9 @@ BinaryMatrix *BinaryMatrix::LoadFromByteArray(byte *data, int row, int col) {
 byte *BinaryMatrix::StoreAsByteArray() {
 	int dataLen = GetBitsLength();
 	int lengthOfByteArray;
-	int sizeBoolArr = _matrixMemory->size();
+	int sizeBoolArr = _matrixMemory.size();
 	bool *boolArr = new bool[sizeBoolArr];
-	for (int i = 0; i < sizeBoolArr; i++) boolArr[i] = _matrixMemory->at(i);
+	for (int i = 0; i < sizeBoolArr; i++) boolArr[i] = _matrixMemory.at(i);
 	byte *arr = ByteUtil::StoreBoolArrayAsBytes(boolArr, _lengthOfMatrixItems, lengthOfByteArray);
 	delete [] boolArr;
 	return arr;
@@ -69,31 +69,29 @@ BinaryMatrix::BinaryMatrix(int rowSize, int colSize) {
 	_row = rowSize;
 	_col = colSize;
 
-	_matrixMemory = null;
-
 	InitMatrixArray();
 };
 
 BinaryMatrix::~BinaryMatrix() {
-	delete _matrixMemory;
+	//delete _matrixMemory;
 };
 
 void BinaryMatrix::InitMatrixArray() {	
 	_lengthOfMatrixItems = _row * _col;
-	_matrixMemory = new std::vector<bool>(_lengthOfMatrixItems, false);
+	_matrixMemory.resize(_lengthOfMatrixItems, false);
 };
 
-void BinaryMatrix::SetItem(int row, int col, bool val) {
+void BinaryMatrix::SetItem(int row, int col, const bool &val) {
 	if (row < 0 || col < 0 || row > _row - 1 || col > _col - 1) throw new std::exception("Index is out of the range!");
 	int index = row * _col + col;
-	std::vector<bool>::reference item = _matrixMemory->at(index);
+	std::vector<bool>::reference item = _matrixMemory.at(index);
 	item = val;
 };
 
-bool BinaryMatrix::GetItem(int row, int col) {
+bool BinaryMatrix::GetItem(int row, int col) const {
 	if (row < 0 || col < 0 || row > _row - 1 || col > _col - 1) throw new std::exception("Index is out of the range!");
 	int index = row * _col + col;
-	bool val = _matrixMemory->at(index);
+	bool val = _matrixMemory.at(index);
 	return val;
 };
 
@@ -307,7 +305,7 @@ BinaryMatrix *BinaryMatrix::Copy() {
 	return matrix;
 };
 
-void BinaryMatrix::DisplayConsole(char *name) {
+void BinaryMatrix::DisplayConsole(const char *name) {
 	cout << name << "[" << _row << "x" << _col << "]:" << endl;
 	for (int i = 0; i < _row; i++) {
 		for (int j = 0; j < _col; j++) {

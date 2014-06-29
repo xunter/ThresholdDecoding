@@ -10,24 +10,27 @@ namespace ThresholdDecoding {
 		virtual ~MultiThresholdCoder(void);
 		
 		void Init();
+		void DisplayDebugInfo(const char *label);
 	protected:
 		MultiThresholdCoder(void);
 		void InitDecoderSectionsCoders();
 		void InitDiffRegistries();
 		int GetSizeDiffRegistry();
 		
-		bool *DecodeCore(bool *encodedBits);
+		void DecodeCore(bool *receivedBits, std::vector<bool> &decodedBits);
 
 		bool IsHubDecoder();
 
 		
-		void SetNextSyndromeVal(int indexBit, BinaryMatrix *syndrome, bool nextVal);
+		void SetNextSyndromeVal(int indexBit, BinaryMatrix *syndrome, const bool &nextVal);
+
+		void DisplayDebugInfoExternalCoder(const char *label);
 
 		void SetFirstSection(bool val);
 		bool GetLastDiffVal();
 		void ShiftDiffRegistryRight(BinaryMatrix *diffRegistry);
 		bool CheckThresholdConditionSyndrome(int indexOutput, std::vector<bool> &syndromes, std::vector<bool> &additionalParts);
-		bool CheckThresholdCondition(int indexOutput);
+		bool CheckThresholdCondition(int indexData, std::vector<CoderDefinitionItem *> *vecCheckBranchItems = NULL);
 	private:	
 		bool *_arrDiffInitVals;
 		bool *_arrSyndromeInitVals;

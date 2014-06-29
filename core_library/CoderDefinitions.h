@@ -22,6 +22,10 @@ public:
 	int GetCountOutputs();
 	int GetMaxM();
 	std::vector<CoderDefinitionItem> *FilterItemsByOutputBranchIndex(int indexOutputBranch);
+	void FilterItemsByOutputBranchIndex(int indexOutputBranch, std::vector<CoderDefinitionItem> &vecItemsOutputBranch);
+	void GetItemsForDataBranchIndex(int indexData, std::vector<CoderDefinitionItem *> &vecItems);
+	CoderDefinitionItem *FindItemByDataCheckIndexes(int indexDataBranch, int indexCheckBranch);
+	int GetDmin();
 };
 
 }

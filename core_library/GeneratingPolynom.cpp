@@ -19,10 +19,9 @@ GeneratingPolynom::~GeneratingPolynom(void)
 
 void GeneratingPolynom::Init()
 {
-	int initialFactorsSize = 100;
 	vector<string> *parts = StringUtils::Split(*_polynomStr, '+');
 	int power = 0;
-	BinaryMatrix *factors = BinaryMatrix::CreateVector(initialFactorsSize);
+	int maxPower = 0;
 	for (auto part = parts->begin(); part != parts->end(); ++part)
 	{
 		string partStr = *part;
@@ -38,12 +37,13 @@ void GeneratingPolynom::Init()
 			eachPower = atoi(powerStr.c_str());		
 			delete xAndPower;
 		}
+		_vecPowers.push_back(eachPower);
 		power = eachPower;
-		factors->SetItem(0, eachPower, true);
+		if (eachPower > maxPower) maxPower = eachPower;
 	}
-	BinaryMatrix *initialFactors = factors;
-	factors = factors->Crop(0, 0, 0, power);
-	BaseClass::Clean(initialFactors);
+
+	BinaryMatrix *factors = BinaryMatrix::CreateVector(maxPower + 1);
+	for (int i = 0; i < _vecPowers.size(); i++) factors->SetItem(0, _vecPowers[i], true);
 	_polynomFactors = factors;
 	_polynomPower = power;
 }

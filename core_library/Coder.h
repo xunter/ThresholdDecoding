@@ -13,6 +13,7 @@ public:
 	virtual int GetEncodedBitsCount() = null;
 	virtual int GetEncodedBytesCount();
 	virtual void Init() = null;
+	virtual void DisplayDebugInfo(const char *label);
 };
 }
 

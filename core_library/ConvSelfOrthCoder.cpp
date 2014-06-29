@@ -16,9 +16,12 @@ void ConvSelfOrthCoder::InitThresholdCoderCore(CoderDefinition *coderDefinition,
 	_polynomPower = polynomPower;
 	_n0 = n0;
 	_k0 = k0;
+	_dmin = 0;
 
 	_arrBoolEncoded = new bool[_n0];
 	_arrBoolSource = new bool[_k0];
+		
+	_countCheckBits = _coderDefinition->GetCountCheckOutputs();
 
 	_coderForDecoder = null;
 	if (createCoderForDecoder)
@@ -65,50 +68,43 @@ byte *ConvSelfOrthCoder::Encode(byte* src)
 	
 	ByteUtil::ConvertBitsToBoolArray(src, countBits, _arrBoolSource);
 	
-	bool *arrBitsEncodedOutput = EncodeCore(_arrBoolSource);
+	std::vector<bool> vecEncodedBits(_n0, false);
+	EncodeCore(_arrBoolSource, vecEncodedBits);
 
 	int lengthOfEncodedData;
-	byte *encodedData = ByteUtil::StoreBoolArrayAsBytes(arrBitsEncodedOutput, _n0, lengthOfEncodedData);
+	byte *encodedData = ByteUtil::StoreBoolVectorAsBytes(vecEncodedBits, lengthOfEncodedData);
 	
-	delete [] arrBitsEncodedOutput;
-
 	return encodedData;
 }
 
-bool *ConvSelfOrthCoder::EncodeCore(bool *inputBits)
+void ConvSelfOrthCoder::EncodeCore(bool *inputBits, std::vector<bool> &encodedBits)
 {
-	bool *arrBitsEncodedOutput = new bool[_n0];
 	int countBits = _k0;
-	bool *boolBits = inputBits;
 	for (int i = 0; i < countBits; i++) {
-		bool val = boolBits[i];
-		arrBitsEncodedOutput[i] = val;
+		const bool &val = inputBits[i];
+		encodedBits[i] = val;
 		BinaryMatrix *registry = _arrCoderRegistries[i];
 		ShiftCoderRegistryRight(registry);
 		SetFirstItem(registry, val);
-		//registry->DisplayConsole("coder registry");
 	}
-
-	int countCheckBits = _coderDefinition->GetCountCheckOutputs();
-
-	for (int i = 0; i < countCheckBits; i++) {
+	
+	for (int i = 0; i < _countCheckBits; i++) {
 		bool checkBit = false;
-		std::vector<CoderDefinitionItem> *checkOnlyItems = _coderDefinition->FilterItemsByOutputBranchIndex(i);
-		for (int j = 0; j < checkOnlyItems->size(); j++) {
-			CoderDefinitionItem &checkItem = checkOnlyItems->at(j);
+		std::vector<CoderDefinitionItem> checkOnlyItems;
+		_coderDefinition->FilterItemsByOutputBranchIndex(i, checkOnlyItems);
+		for (int j = 0; j < checkOnlyItems.size(); j++) {
+			CoderDefinitionItem &checkItem = checkOnlyItems.at(j);
 			int indexInput = checkItem.i - 1;
 			BinaryMatrix *coderRegistry = _arrCoderRegistries[indexInput];
 			for (int k = 0; k < checkItem.powersPolynom.size(); k++) {
 				int &power = checkItem.powersPolynom.at(k);
-				bool registryCellVal = coderRegistry->GetItem(0, power);
+				const bool &registryCellVal = coderRegistry->GetItem(0, power);
 				checkBit = ByteUtil::Xor(checkBit, registryCellVal);
 			}
 		}
-		delete checkOnlyItems;
 		int indexCheckBit = _k0 + i;
-		arrBitsEncodedOutput[indexCheckBit] = checkBit;
+		encodedBits[indexCheckBit] = checkBit;
 	}
-	return arrBitsEncodedOutput;
 }
 
 byte *ConvSelfOrthCoder::Decode(byte* src)
@@ -116,111 +112,101 @@ byte *ConvSelfOrthCoder::Decode(byte* src)
 	int countEncodedBits = _n0;
 	ByteUtil::ConvertBitsToBoolArray(src, countEncodedBits, _arrBoolEncoded);
 	
-	bool *arrDecodedBits = DecodeCore(_arrBoolEncoded);
+	std::vector<bool> vecDecodedBits(_k0, false);
+	DecodeCore(_arrBoolEncoded, vecDecodedBits);
 
 	int lengthOfDecodedData;
-	byte *decodedData = ByteUtil::StoreBoolArrayAsBytes(arrDecodedBits, _k0, lengthOfDecodedData);
+	byte *decodedData = ByteUtil::StoreBoolVectorAsBytes(vecDecodedBits, lengthOfDecodedData);
 	
-	delete [] arrDecodedBits;
-
 	return decodedData;
 };
 
-void ConvSelfOrthCoder::SetNextSyndromeVal(int indexBit, BinaryMatrix *syndrome, bool nextVal) {
+void ConvSelfOrthCoder::SetNextSyndromeVal(int indexBit, BinaryMatrix *syndrome, const bool &nextVal) {
 	ShiftSyndromeRegistryRight(syndrome);
 	syndrome->SetItem(0, 0, nextVal);
 };
 
-bool *ConvSelfOrthCoder::DecodeCore(bool *encodedBits) {
-	
-	bool *arrDecodedBits = new bool[_k0];
-	
+void ConvSelfOrthCoder::DecodeCore(bool *encodedBits, std::vector<bool> &decodedBits) {
+		
 	bool checkingBitFromCoderForDecoder;
 	bool encodedBitFromCoderForDecoder;
-	bool *encodedBitsDecoderCoder = _coderForDecoder->EncodeCore(encodedBits);
+	std::vector<bool> vecEncodedBitsInternalCoder(_n0, false);
+	_coderForDecoder->EncodeCore(encodedBits, vecEncodedBitsInternalCoder);
 
 	int sizeSyndromeRegistry = GetSizeSyndromeRegistry();
-	int countSyndromeRegistries = _n0 - _k0;
+	int countSyndromeRegistries = GetCountSyndromeRegistries();
 	for (int i = 0; i < countSyndromeRegistries; i++) {
 		int indexCheckBit = _k0 + i;
-		bool checkBitDecoderCoder = encodedBitsDecoderCoder[indexCheckBit];
-		bool incomingCheckBit = encodedBits[indexCheckBit];
-		bool currentSyndrome = ByteUtil::Xor(checkBitDecoderCoder, incomingCheckBit);
+		const bool &checkBitDecoderCoder = vecEncodedBitsInternalCoder[indexCheckBit];
+		const bool &incomingCheckBit = encodedBits[indexCheckBit];
+		bool currentSyndromeVal = ByteUtil::Xor(checkBitDecoderCoder, incomingCheckBit);
 		BinaryMatrix *currSyndromeRegistry = _syndromeRegistries->at(i);
 
-		ShiftSyndromeRegistryRight(currSyndromeRegistry);
-		currSyndromeRegistry->SetItem(0, 0, currentSyndrome);
-		
-		//currSyndromeRegistry->DisplayConsole("syndrome registry");
+		SetNextSyndromeVal(i, currSyndromeRegistry, currentSyndromeVal);
 	}
 
 	for (int i = 0; i < _k0; i++) {
-		bool thresholdConditionResult = CheckThresholdCondition(i);
+		std::vector<CoderDefinitionItem *> vecTargetCheckIndexes;
+		_coderDefinition->GetItemsForDataBranchIndex(i, vecTargetCheckIndexes);
+		bool thresholdConditionResult = CheckThresholdCondition(i, &vecTargetCheckIndexes);
 		BinaryMatrix *targetDecoderCoderRegistry = _coderForDecoder->_arrCoderRegistries[i];
-		bool lastBitInRegistry = targetDecoderCoderRegistry->GetItem(0, targetDecoderCoderRegistry->GetColCount() - 1);
-		bool decodedBit = ByteUtil::Xor(thresholdConditionResult, lastBitInRegistry);
+		const bool &lastBitInRegistry = targetDecoderCoderRegistry->GetItem(0, targetDecoderCoderRegistry->GetColCount() - 1);
+		const bool &decodedBit = ByteUtil::Xor(thresholdConditionResult, lastBitInRegistry);
 
 		if (thresholdConditionResult) {
-			std::vector<BinaryMatrix *> *syndromes = FilterSyndromeRegistriesForCondition(i);
-			for (int j = 0; j < syndromes->size(); j++) {
-				BinaryMatrix *syndrome = syndromes->at(j);
-				DropFlagsSyndromeRegistry(syndrome, i);
-			}
-			delete syndromes;
-		}
-
-		arrDecodedBits[i] = decodedBit;
-	}
-
-	return arrDecodedBits;
-};
-
-std::vector<BinaryMatrix *> *ConvSelfOrthCoder::FilterSyndromeRegistriesForCondition(int indexCondition) {
-	std::vector<BinaryMatrix *> *vec = new std::vector<BinaryMatrix *>();
-	BinaryMatrix *syndrome = _syndromeRegistries->at(indexCondition);
-	vec->push_back(syndrome);
-	return vec;
-};
-
-void ConvSelfOrthCoder::DropFlagsSyndromeRegistry(BinaryMatrix *syndromeRegistry, int indexBranch) {
-	//fill syndromes
-	int countCheckBits = _coderDefinition->GetCountCheckOutputs();
-	for (int i = 0; i < countCheckBits; i++) {
-		std::vector<CoderDefinitionItem> *checkOnlyItems = _coderDefinition->FilterItemsByOutputBranchIndex(i);
-		for (int j = 0; j < checkOnlyItems->size(); j++) {
-			CoderDefinitionItem &checkItem = checkOnlyItems->at(j);
-			int indexInput = checkItem.i - 1;
-			BinaryMatrix *syndromeRegistry = _syndromeRegistries->at(indexInput);
-			for (int k = 0; k < checkItem.powersPolynom.size(); k++) {
-				int &power = checkItem.powersPolynom.at(k);
-				int indexCell = syndromeRegistry->GetColCount() - (power + 1);
-				syndromeRegistry->SetItem(0, indexCell, false);
+			for (int j = 0; j < vecTargetCheckIndexes.size(); j++) {
+				CoderDefinitionItem *eachItem = vecTargetCheckIndexes.at(j);
+				int indexCheckBranch = eachItem->j - 1;
+				BinaryMatrix *syndrome = _syndromeRegistries->at(indexCheckBranch);
+				DropFlagsSyndromeRegistry(syndrome, i, indexCheckBranch);
 			}
 		}
-		delete checkOnlyItems;
+
+		decodedBits[i] = decodedBit;
 	}
 };
 
-bool ConvSelfOrthCoder::CheckThresholdCondition(int indexOutput)
+void ConvSelfOrthCoder::FilterSyndromeRegistriesForCondition(int indexCondition, std::vector<BinaryMatrix *> &vec) {
+	std::vector<CoderDefinitionItem *> vecItems;
+	_coderDefinition->GetItemsForDataBranchIndex(indexCondition, vecItems);
+	for (int i = 0; i < vecItems.size(); i++) {
+		CoderDefinitionItem *item = vecItems[i];
+		int indexCheckBranch = item->j - 1;
+		BinaryMatrix *eachSyndrome = _syndromeRegistries->at(indexCheckBranch);
+		vec.push_back(eachSyndrome);
+	}
+};
+
+void ConvSelfOrthCoder::DropFlagsSyndromeRegistry(BinaryMatrix *syndromeRegistry, int indexDataBranch, int indexCheckBranch) {
+	CoderDefinitionItem *checkItem = _coderDefinition->FindItemByDataCheckIndexes(indexDataBranch, indexCheckBranch);
+	for (int k = 0; k < checkItem->powersPolynom.size(); k++) {
+		int &power = checkItem->powersPolynom.at(k);
+		int indexCell = syndromeRegistry->GetColCount() - (power + 1);
+		syndromeRegistry->SetItem(0, indexCell, false);
+	}
+};
+
+bool ConvSelfOrthCoder::CheckThresholdCondition(int indexOutput, std::vector<CoderDefinitionItem *> *vecCheckBranchItems)
 {
+	int indexTargetDataBranch = indexOutput;
 	std::vector<bool> syndromes;
-
+	
+	std::vector<CoderDefinitionItem *> vecTargetCheckIndexes;
+	if (vecCheckBranchItems != NULL) vecTargetCheckIndexes = *vecCheckBranchItems;
+	else _coderDefinition->GetItemsForDataBranchIndex(indexTargetDataBranch, vecTargetCheckIndexes);
+	
 	//fill syndromes
-	int countCheckBits = _coderDefinition->GetCountCheckOutputs();
+	int countCheckBits = vecTargetCheckIndexes.size();
 	for (int i = 0; i < countCheckBits; i++) {
-		std::vector<CoderDefinitionItem> *checkOnlyItems = _coderDefinition->FilterItemsByOutputBranchIndex(i);
-		for (int j = 0; j < checkOnlyItems->size(); j++) {
-			CoderDefinitionItem &checkItem = checkOnlyItems->at(j);
-			int indexInput = checkItem.i - 1;
-			BinaryMatrix *syndromeRegistry = _syndromeRegistries->at(indexInput);
-			for (int k = 0; k < checkItem.powersPolynom.size(); k++) {
-				int &power = checkItem.powersPolynom.at(k);
-				int indexCell = syndromeRegistry->GetColCount() - (power + 1);
-				bool syndromeVal = syndromeRegistry->GetItem(0, indexCell);
-				syndromes.push_back(syndromeVal);
-			}
+		CoderDefinitionItem *checkItem = vecTargetCheckIndexes.at(i);
+		int indexTargetCheckBranch = checkItem->j - 1;
+		BinaryMatrix *syndromeRegistry = _syndromeRegistries->at(indexTargetCheckBranch);
+		for (int k = 0; k < checkItem->powersPolynom.size(); k++) {
+			int &power = checkItem->powersPolynom.at(k);
+			int indexCell = syndromeRegistry->GetColCount() - (power + 1);
+			bool syndromeVal = syndromeRegistry->GetItem(0, indexCell);
+			syndromes.push_back(syndromeVal);
 		}
-		delete checkOnlyItems;
 	}
 
 	std::vector<bool> additionalParts;
@@ -238,7 +224,7 @@ bool ConvSelfOrthCoder::CheckThresholdConditionSyndrome(int indexOutput, std::ve
 	for (int i = 0; i < additionalParts.size(); i++) {
 		all.push_back(additionalParts.at(i));
 	}
-	float t = (float)all.size() / 2;
+	float t = ComputeThresholdValue(indexOutput);
 	int countOfIdentities = 0;
 	for (int i = 0; i < all.size(); i++) {
 		if (all.at(i) == true) {
@@ -248,7 +234,7 @@ bool ConvSelfOrthCoder::CheckThresholdConditionSyndrome(int indexOutput, std::ve
 	return (float)countOfIdentities > t;
 };
 
-void ConvSelfOrthCoder::SetFirstItem(BinaryMatrix *coderRegistry, bool &val) {
+void ConvSelfOrthCoder::SetFirstItem(BinaryMatrix *coderRegistry, const bool &val) {
 	coderRegistry->SetItem(0, 0, val);
 }
 
@@ -271,12 +257,13 @@ void ConvSelfOrthCoder::Init()
 {
 	InitCoderRegistries();
 	InitSyndromeRegistries();
+	_dmin = _coderDefinition->GetDmin();
 }
 
 void ConvSelfOrthCoder::InitSyndromeRegistries() {
 	int sizeSyndromeRegistry = GetSizeSyndromeRegistry();
+	int countSyndromeRegistries = GetCountSyndromeRegistries();
 	_syndromeRegistries = new std::vector<BinaryMatrix*>();
-	int countSyndromeRegistries = _n0;
 	for (int i = 0; i < countSyndromeRegistries; i++) {
 		BinaryMatrix *syndromeRegistry = BinaryMatrix::CreateVector(sizeSyndromeRegistry);
 		_syndromeRegistries->push_back(syndromeRegistry);
@@ -306,7 +293,58 @@ int ConvSelfOrthCoder::GetCountCoderRegistries() {
 	return _k0;
 };
 
+int ConvSelfOrthCoder::GetCountSyndromeRegistries() {
+	return _n0 - _k0;
+};
+
 int ConvSelfOrthCoder::GetEncodedBitsCount() {
 	return _n0;
-}
+};
+
+float ConvSelfOrthCoder::ComputeThresholdValue(int indexData) {
+	float t = (float)(_dmin - 1) / 2;
+	return t;
+};
+
+
+void ConvSelfOrthCoder::DisplayDebugInfoCoderDataRegistry() {
+	char nbuf[256];
+	int countCoderRegs = GetCountCoderRegistries();
+	for (int i = 0; i < countCoderRegs; i++) { 
+		itoa(i, nbuf, 10);
+		std::string labelReg = "Coder data registry ";
+		labelReg = labelReg + nbuf;
+		_arrCoderRegistries[i]->DisplayConsole(labelReg.c_str());
+	}
+};
+
+void ConvSelfOrthCoder::DisplayDebugInfoExternalCoder(const char *label) {	
+	
+	std::cout << "Coder " << label << std::endl;
+
+	char nbuf[256];
+	int countCoderRegs = GetCountCoderRegistries();
+	DisplayDebugInfoCoderDataRegistry();
+	
+	for (int i = 0; i < countCoderRegs; i++) {
+		itoa(i, nbuf, 10);
+		std::string labelReg = "Decoder data registry ";
+		labelReg = labelReg + nbuf;
+		_coderForDecoder->_arrCoderRegistries[i]->DisplayConsole(labelReg.c_str());
+	}
+
+	int countSyndromeRegistries = GetCountSyndromeRegistries();
+	for (int i = 0; i < countSyndromeRegistries; i++) {
+		itoa(i, nbuf, 10);
+		std::string labelReg = "Decoder syndrome registry ";
+		labelReg = labelReg + nbuf;
+		_syndromeRegistries->at(i)->DisplayConsole(labelReg.c_str());
+	}
+};
+
+void ConvSelfOrthCoder::DisplayDebugInfo(const char *label) {
+	if (_coderForDecoder != null) {	
+		DisplayDebugInfoExternalCoder(label);
+	}
+};
 }

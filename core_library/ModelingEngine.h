@@ -19,7 +19,7 @@ namespace ThresholdDecoding {
 
 	class BinarySymmetricChannel : public DataTransmissionChannel {
 	public:
-		BinarySymmetricChannel(float p0) {
+		BinarySymmetricChannel(double p0) {
 			_p0 = p0;
 		};
 
@@ -32,7 +32,7 @@ namespace ThresholdDecoding {
 			int bytesLen = ByteUtil::GetByteLenForDataLen(dataLen);
 			byte *noisedData = ByteUtil::CopyData(data, bytesLen);
 			
-			float pNoisePercent = _p0 * 100;
+			double pNoisePercent = _p0 * 100;
 			for (int i = 0; i < dataLen; i++) {
 				float randPercent = ((float)rand())/((float)RAND_MAX) * 100.0f;
 				bool needsNoise = pNoisePercent >= randPercent;
@@ -45,7 +45,7 @@ namespace ThresholdDecoding {
 			return noisedData;
 		};
 	private: 
-		float _p0;
+		double _p0;
 	};
 
 	class TotalSimulationResult {
@@ -66,41 +66,45 @@ namespace ThresholdDecoding {
 			delete Items;
 		};
 
-		float Pb;
+		double Pb;
 		std::vector<ModelingResultItem *> *Items;
-		int FailsCounter;
-		int BitErrorCounter;
-		float pNoise;
-		float pBitResult;
-		float pResult;
-		float pBlock;
-		int totalCountIterations;
+		long FailsCounter;
+		long BitErrorCounter;
+		double pNoise;
+		double pBitResult;
+		double pResult;
+		double pBlock;
+		long totalCountIterations;
 	};
 
 class ModelingEngine : public BaseClass {
 private:
 	int _dataBlockLen;
-	float _pNoise;
-	float _noiseCounter;
-
+	double _pNoise;
+	double _noiseCounter;
+	bool _debugMode;
 	Coder *_coder;
 	DataBlockGenerator *_generator;
 	int _decoderTactsLatency;
 	std::vector<ModelingResultItem *> *_items;
 	std::queue<ModelingResultItem *> *_workingItemsQueue;
-	int _counter;
+	long _counter;
 	DataTransmissionChannel *_channel;
 	bool _storeItems;
-	
+	std::ostringstream _oss;
+	bool _useCoder;
 public:
-	ModelingEngine(Coder *coder, DataBlockGenerator *generator, float pNoise, int originalDataBitsLen);
+	ModelingEngine(Coder *coder, DataBlockGenerator *generator, double pNoise, int originalDataBitsLen);
 	virtual ~ModelingEngine(void);
+
+	bool IsCoderUsed();
+	void SetDebugMode(bool debugMode);
 	void Init();
 	void SetStoreItems(bool store);
 
-	TotalSimulationResult *SimulateTotal(int volume, int limitErrors);
+	TotalSimulationResult *SimulateTotal(long volume, int limitErrors);
 	ModelingResultItem *SimulateIteration();
-	int GetNoiseCount();
+	long GetNoiseCount();
 	void SetDecoderLatency(int latencyTacts);
 	std::vector<ModelingResultItem *> *GetItems();
 	

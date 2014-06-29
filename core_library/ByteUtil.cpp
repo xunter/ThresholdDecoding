@@ -56,7 +56,7 @@ bool ByteUtil::GetBitForByteData(byte *byteData, int countBits, int indexBit) {
 
 void ByteUtil::InvertBitInByteData(byte *byteData, int countBits, int indexBit) {
 	int countBytes = GetByteLenForDataLen(countBits);
-	int indexByte = static_cast<int>( ceil(static_cast<double>( (indexBit + 1) / BYTE_BIT_LEN )) );
+	int indexByte = static_cast<int>( floor(static_cast<double>( indexBit / BYTE_BIT_LEN )) );
 	int posBitInByte = indexBit % BYTE_BIT_LEN;
 	byte &b = byteData[indexByte];
 	InvertBit(b, posBitInByte);
@@ -64,7 +64,7 @@ void ByteUtil::InvertBitInByteData(byte *byteData, int countBits, int indexBit) 
 
 void ByteUtil::FindBitLocationInData(byte *data, int countBits, int indexBit, byte &foundByte, int &foundIndexByte, int &foundIndexBit) {
 	int countBytes = GetByteLenForDataLen(countBits);
-	foundIndexByte = static_cast<int>( ceil(static_cast<double>( (indexBit + 1) / BYTE_BIT_LEN )) );
+	foundIndexByte = static_cast<int>( floor(static_cast<double>( indexBit / BYTE_BIT_LEN )) );
 	foundIndexBit = indexBit % BYTE_BIT_LEN;
 	foundByte = data[foundIndexByte];
 };
@@ -73,8 +73,8 @@ bool ByteUtil::IsDataEqual(byte *left, byte *right, int bitLength) {
 	int byteLen = ByteUtil::GetByteLenForDataLen(bitLength);
 	int bitCounter = 0;
 	for (int i = 0; i < byteLen; i++) {
-		byte eachLeftByte = left[i];
-		byte eachRightByte = right[i];
+		byte &eachLeftByte = left[i];
+		byte &eachRightByte = right[i];
 		for (int j = 0; j < BYTE_BIT_LEN; j++) {
 			if (bitCounter > bitLength) {
 				break;
@@ -95,7 +95,7 @@ bool ByteUtil::IsDataEqual(byte *left, byte *right, int bitLength) {
 byte *ByteUtil::CopyBitsData(byte *bitsData, int lenBits) {
 	int lenBytes = ByteUtil::GetByteLenForDataLen(lenBits);
 	byte *newData = new byte[lenBytes];
-	for (int i = 0; i < lenBits; i++) {
+	for (int i = 0; i < lenBytes; i++) {
 		newData[i] = 0x00;
 	};
 	for (int i = 0; i < lenBits; i++) {
@@ -111,7 +111,7 @@ byte *ByteUtil::CopyData(byte *data, int len) {
 	return copyArr;
 };
 
-byte ByteUtil::GetOnlyBitByte(byte &b, int bitPos) {		
+byte ByteUtil::GetOnlyBitByte(const byte &b, int bitPos) {		
 	byte mask = (byte)pow(2.0, BYTE_BIT_LEN - bitPos - 1);
 	return b & mask;
 };
@@ -149,7 +149,7 @@ void ByteUtil::InvertBit(byte &b, int bitPos) {
 	}
 };
 
-bool ByteUtil::IsBitSettedInByte(byte &b, int bitPos) {
+bool ByteUtil::IsBitSettedInByte(const byte &b, int bitPos) {
 	byte bitByte = GetOnlyBitByte(b, bitPos);
 	return bitByte != 0x00;
 };
@@ -199,10 +199,10 @@ int ByteUtil::ComputeBitDiff(byte *left, byte *right, int len)
 	int bitCounter = 0;
 	int bitIter = 0;
 	for (int i = 0; i < byteLen; i++) {
-		byte eachLeftByte = left[i];
-		byte eachRightByte = right[i];
+		byte &eachLeftByte = left[i];
+		byte &eachRightByte = right[i];
 		for (int j = 0; j < BYTE_BIT_LEN; j++) {
-			if (bitCounter > len) {
+			if (bitCounter == len) {
 				break;
 			}
 			int bitPos = j;
@@ -229,10 +229,10 @@ byte *ByteUtil::StoreBoolArrayAsBytes(bool *boolArray, int lengthOfBoolArray, in
 	arr[0] = 0x00;
 	for (int i = 0; i < lengthOfBoolArray; i++)
 	{
-		bool item = boolArray[i];
-		byte *tempByte = &arr[arrIndex];
+		const bool &item = boolArray[i];
+		byte &tempByte = arr[arrIndex];
 		if (item == true) {
-			ByteUtil::SetBit(*tempByte, byteFillCounter);
+			ByteUtil::SetBit(tempByte, byteFillCounter);
 		}
 			
 		byteFillCounter++;
@@ -244,6 +244,33 @@ byte *ByteUtil::StoreBoolArrayAsBytes(bool *boolArray, int lengthOfBoolArray, in
 	}
 	return arr;
 }
+
+byte *ByteUtil::StoreBoolVectorAsBytes(const std::vector<bool> &vecBools, int &lenByteArray) {
+	int lengthOfBoolArray = vecBools.size();
+	int dataLen = lengthOfBoolArray;
+	int byteArrayLen = ByteUtil::GetByteLenForDataLen(dataLen);
+	lenByteArray = byteArrayLen;
+	byte *arr = new byte[byteArrayLen];
+	int arrIndex = 0;
+	int byteFillCounter = 0;
+	arr[0] = 0x00;
+	for (int i = 0; i < lengthOfBoolArray; i++)
+	{
+		const bool &item = vecBools[i];
+		byte &tempByte = arr[arrIndex];
+		if (item == true) {
+			ByteUtil::SetBit(tempByte, byteFillCounter);
+		}
+			
+		byteFillCounter++;
+		if (byteFillCounter == BYTE_BIT_LEN) {
+			byteFillCounter = 0;
+			arrIndex++;
+			arr[arrIndex] = 0x00;
+		}
+	}
+	return arr;
+};
 
 byte ByteUtil::ReverseBitsInByte(byte b) {
 	byte reversed = 0x00;
@@ -266,7 +293,7 @@ bool *ByteUtil::ConvertBitsToBoolArray(byte *bits, int count) {
 void ByteUtil::ConvertBitsToBoolArray(byte *bits, int count, bool *existingBoolArr) {
 	int bytesCount = GetByteLenForDataLen(count);
 	for (int i = 0; i < bytesCount; i++) {
-		byte curr = bits[i];
+		byte &curr = bits[i];
 		for (int j = 0; j < BYTE_BIT_LEN; j++) {
 			int boolIndex = i * BYTE_BIT_LEN + j;
 			bool currBit = IsBitSettedInByte(curr, j);
@@ -278,7 +305,7 @@ void ByteUtil::ConvertBitsToBoolArray(byte *bits, int count, bool *existingBoolA
 	}
 };
 
-bool ByteUtil::Xor(bool left, bool right) {
+bool ByteUtil::Xor(const bool &left, const bool &right) {
 	return left != right;
 };
 

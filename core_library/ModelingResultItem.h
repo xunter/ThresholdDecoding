@@ -29,10 +29,10 @@ public:
 	void ModelingResultItem::SetReceivedBlock(BinaryData *data);		
 	void ModelingResultItem::SetDecodedBlock(BinaryData *data);
 
-	BinaryData *GetSourceBlock();
-	BinaryData *GetEncodedBlock();
-	BinaryData *GetReceivedBlock();
-	BinaryData *GetDecodedBlock();
+	BinaryData *GetSourceBlock() const;
+	BinaryData *GetEncodedBlock() const;
+	BinaryData *GetReceivedBlock() const;
+	BinaryData *GetDecodedBlock() const;
 
 	bool ModelingResultItem::IsResultEqualsOriginal();
 };

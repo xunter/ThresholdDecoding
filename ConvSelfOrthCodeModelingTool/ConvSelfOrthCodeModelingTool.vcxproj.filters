@@ -21,6 +21,8 @@
     <None Include="coder_definition_k0_1_n0_2.txt" />
     <None Include="cd_k2_n4_b3.txt" />
     <None Include="result_k1_n2_R1r2_N100_d4.txt" />
+    <None Include="snrdB_p0_table.txt" />
+    <None Include="coder_definition_coderless.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

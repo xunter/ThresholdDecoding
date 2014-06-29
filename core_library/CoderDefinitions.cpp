@@ -47,10 +47,46 @@ namespace ThresholdDecoding {
 	
 	std::vector<CoderDefinitionItem> *CoderDefinition::FilterItemsByOutputBranchIndex(int indexOutputBranch) {
 		std::vector<CoderDefinitionItem> *filteredItems = new std::vector<CoderDefinitionItem>();
+		FilterItemsByOutputBranchIndex(indexOutputBranch, *filteredItems);
+		return filteredItems;
+	};
+	
+	void CoderDefinition::FilterItemsByOutputBranchIndex(int indexOutputBranch, std::vector<CoderDefinitionItem> &vecItemsOutputBranch) {
 		for (int i = 0; i < itemsCoderDefinition.size(); i++) {
 			CoderDefinitionItem &item = itemsCoderDefinition.at(i);
-			if (item.j == indexOutputBranch + 1) filteredItems->push_back(item);
+			if (item.j == indexOutputBranch + 1) vecItemsOutputBranch.push_back(item);
 		}
-		return filteredItems;
+	};
+
+	void CoderDefinition::GetItemsForDataBranchIndex(int indexData, std::vector<CoderDefinitionItem *> &vecItems) {
+		for (int i = 0; i <  itemsCoderDefinition.size(); i++) {
+			CoderDefinitionItem &coderDefItem = itemsCoderDefinition.at(i);
+			if (coderDefItem.i - 1 == indexData) vecItems.push_back(&coderDefItem);
+		}
+	};
+
+	CoderDefinitionItem *CoderDefinition::FindItemByDataCheckIndexes(int indexDataBranch, int indexCheckBranch) {		
+		for (int i = 0; i <  itemsCoderDefinition.size(); i++) {
+			CoderDefinitionItem &coderDefItem = itemsCoderDefinition.at(i);
+			if (coderDefItem.i - 1 == indexDataBranch && coderDefItem.j - 1 == indexCheckBranch) return &coderDefItem;
+		}
+		return null;
+	};
+
+	int CoderDefinition::GetDmin() {
+		int dmin = INT_MAX;
+		for (int i = 0; i < itemsCoderDefinition.size(); i++) {
+			CoderDefinitionItem *item = &itemsCoderDefinition.at(i);
+			std::vector<CoderDefinitionItem *> vecTargetItems;
+			int indexData = item->i - 1;
+			GetItemsForDataBranchIndex(indexData, vecTargetItems);
+			int currDMin = 1;
+			for (int j = 0; j < vecTargetItems.size(); j++) {
+				CoderDefinitionItem *eachItem = vecTargetItems[j];
+				currDMin += eachItem->powersPolynom.size();
+			}
+			if (currDMin < dmin) dmin = currDMin;
+		}
+		return dmin;
 	};
 }

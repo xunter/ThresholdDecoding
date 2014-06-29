@@ -4,10 +4,10 @@
 
 namespace ThresholdDecoding {
 	ModelingResultItem::~ModelingResultItem(void) {
-		BaseClass::Clean(_srcBlock);
-		BaseClass::Clean(_encodedBlock);
-		BaseClass::Clean(_receivedBlock);
-		BaseClass::Clean(_decodedBlock);
+		if (_srcBlock != NULL) delete _srcBlock;
+		if (_encodedBlock != NULL) delete _encodedBlock;
+		if (_receivedBlock != NULL) delete _receivedBlock;
+		if (_decodedBlock != NULL) delete _decodedBlock;
 	}
 
 	void ModelingResultItem::SetSourceBlock(BinaryData *src) {
@@ -27,7 +27,7 @@ namespace ThresholdDecoding {
 	};
 
 	bool ModelingResultItem::IsResultEqualsOriginal() {
-		return ByteUtil::IsDataEqual(_srcBlock->GetData(), _decodedBlock->GetData(), _originalDataLen);
+		return _bitDiffCount == 0;
 	};
 
 	ModelingResultItem::ModelingResultItem(int originalDataLen) {
@@ -49,17 +49,17 @@ namespace ThresholdDecoding {
 	}
 
 
-	BinaryData *ModelingResultItem::GetSourceBlock() {
+	BinaryData *ModelingResultItem::GetSourceBlock() const {
 		return _srcBlock;	
 	};
 
-	BinaryData *ModelingResultItem::GetEncodedBlock() {
+	BinaryData *ModelingResultItem::GetEncodedBlock() const {
 		return _encodedBlock;
 	};
-	BinaryData *ModelingResultItem::GetReceivedBlock() {
+	BinaryData *ModelingResultItem::GetReceivedBlock() const {
 		return _receivedBlock;
 	};
-	BinaryData *ModelingResultItem::GetDecodedBlock() {
+	BinaryData *ModelingResultItem::GetDecodedBlock() const {
 		return _decodedBlock;
 	};
 
